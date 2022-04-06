@@ -38,15 +38,17 @@
     <h1 class="titolo">Warriors.GAME</h1>
     <script> 
         class Player{
-            constructor(posizione,velocity){
+            constructor(posizione,velocity, id){
                 this.posizione=[0,0];
                 this.velocity=[0,0];
+                this.id;
             }
 
         }
         let scene, camera, texture, pointGeo, pointMaterial, point, point2, renderer, tastiera, acc = 0.02;
         var tasto, posizione=[0,0], velocity=[0,0], velocity2=[0,0], posizione2=[0,0];
         var local= new Player();
+        local.id = Math.floor(Math.random()*600);
         var Per=new Player();
 
         function init(){

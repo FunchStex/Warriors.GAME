@@ -13,12 +13,41 @@
         body{margin: 0;}
         canvas{width: 100%; height: 100%;}
     </style> 
+       <script>
+        function call() {
+            var oReq = new XMLHttpRequest();
+            oReq.addEventListener("POST", reqListener);
+            oReq.open('POST', 'http://192.168.100.73:8000/', true);
+            oReq.setRequestHeader("Content-Type", "application/json")
+            oReq.onreadystatechange = function () {
+                    var json = JSON.stringify(oReq);
+                    console.log(json);
+            };
+            var _data = JSON.stringify(local);
+            oReq.send(_data);
+        }
+        function reqListener() {
+            console.log("risposta");
+        }
+        function read(){
+
+        }
+    </script>
 </head>
 <body>
     <h1 class="titolo">Warriors.GAME</h1>
     <script> 
+        class Player{
+            constructor(posizione,velocity){
+                this.posizione=[0,0];
+                this.velocity=[0,0];
+            }
+
+        }
         let scene, camera, texture, pointGeo, pointMaterial, point, point2, renderer, tastiera, acc = 0.02;
         var tasto, posizione=[0,0], velocity=[0,0], velocity2=[0,0], posizione2=[0,0];
+        var local= new Player();
+        var Per=new Player();
 
         function init(){
             scene = new THREE.Scene();
@@ -42,7 +71,7 @@
             point.position.set(1, 0, -1);
             point2.position.set(-1, 0 ,-1);
 
-            posizione = [point.position.x, point.position.y];
+            local.posizione = [point.position.x, point.position.y];
             posizione2 = [point2.position.x, point2.position.y];
 
             render();
@@ -51,35 +80,37 @@
         function render(){
             movement();
             collider();
-
             console.log(JSON.stringify(posizione));
             console.log(JSON.stringify(velocity));
 
             renderer.render(scene, camera);
             requestAnimationFrame(render);
             //console.log("animazione avvenuta");
+            if(local.velocity[0]!=0||local.velocity[1]!=0)
+                call();
+            point2.position.set(per.posizione[0],0,per.posizione[1]);
         }
 
         function movement(){
             //campo
-            if(posizione[0]< -6/2 || posizione[0]> 6/2){
-                velocity[0]=0;
-                velocity[1]=0;
-                if(posizione[0]< -3/2){
-                    velocity[0] += acc;
+            if(local.posizione[0]< -6/2 || local.posizione[0]> 6/2){
+                local.velocity[0]=0;
+                local.velocity[1]=0;
+                if(local.posizione[0]< -3/2){
+                    local.velocity[0] += acc;
                 }
                 else{
-                    velocity[0] -= acc;
+                    local.velocity[0] -= acc;
                 }
             };
-            if(posizione[1]< -3/2 || posizione[1]> 3/2){
-                velocity[0]=0; 
-                velocity[1]=0;
-                if(posizione[1]< -3/2){
-                    velocity[1] += acc;
+            if(local.posizione[1]< -3/2 || local.posizione[1]> 3/2){
+                local.velocity[0]=0; 
+                local.velocity[1]=0;
+                if(local.posizione[1]< -3/2){
+                    local.velocity[1] += acc;
                 }
                 else{
-                    velocity[1] -= acc;
+                    local.velocity[1] -= acc;
                 }
             };
             //direzione
@@ -87,32 +118,32 @@
                 tasto=tastiera.keyCode;
                 switch(tastiera.keyCode){
                     case 87:
-                        velocity[1] += acc;
+                        local.velocity[1] += acc;
                         break;
                     case 83:
-                        velocity[1] -= acc;
+                        local.velocity[1] -= acc;
                         break;
                     case 65: 
-                        velocity[0] -= acc;
+                        local.velocity[0] -= acc;
                         break;
                     case 68: 
-                        velocity[0] += acc;
+                        local.velocity[0] += acc;
                         break;
                     case 81:
-                        velocity[0] -= acc/2;
-                        velocity[1] += acc/2;
+                        local.velocity[0] -= acc/2;
+                        local.velocity[1] += acc/2;
                         break;
                     case 69:
-                        velocity[0] += acc/2;
-                        velocity[1] += acc/2;
+                        local.velocity[0] += acc/2;
+                        local.velocity[1] += acc/2;
                         break;
                     case 90:
-                        velocity[0] -= acc/2;
-                        velocity[1] -= acc/2;
+                        local.velocity[0] -= acc/2;
+                        local.velocity[1] -= acc/2;
                         break;
                     case 67:
-                        velocity[0] += acc/2;
-                        velocity[1] -= acc/2;
+                        local.velocity[0] += acc/2;
+                        local.velocity[1] -= acc/2;
                         break;
                 }
                 //console.log(velocity);
@@ -120,45 +151,45 @@
             //movimento
             switch(tasto){
                 case 87:
-                    velocity[0] = 0;
-                    posizione[1] += velocity[1];
-                    point.position.set(posizione[0], posizione[1]);
+                    local.velocity[0] = 0;
+                    local.posizione[1] += local.velocity[1];
+                    point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 83: 
-                    velocity[0] = 0;
-                    posizione[1] +=velocity[1];
-                    point.position.set(posizione[0], posizione[1]);
+                    local.velocity[0] = 0;
+                    local.posizione[1] +=local.velocity[1];
+                    point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 65:
-                    velocity[1] = 0; 
-                    posizione[0] += velocity[0];
-                    point.position.set(posizione[0], posizione[1]);
+                    local.velocity[1] = 0; 
+                    local.posizione[0] += local.velocity[0];
+                    point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 68: 
-                    velocity[1] = 0;
-                    posizione[0] += velocity[0];
-                    point.position.set(posizione[0], posizione[1]);
+                    local.velocity[1] = 0;
+                    local.posizione[0] += local.velocity[0];
+                    point.position.set(local.posizione[0], local.posizione[1]);
                     //funzione che aggiorna le variabili su host agg(poszione[],velocita[],player,life,)
                     break;
                 case 81:
-                    posizione[0] += velocity[0];
-                    posizione[1] += velocity[1];
-                    point.position.set(posizione[0], posizione[1]);
+                    local.posizione[0] += local.velocity[0];
+                    local.posizione[1] += local.velocity[1];
+                    point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 69:
-                    posizione[0] +=velocity[0];
-                    posizione[1] += velocity[1];
-                    point.position.set(posizione[0], posizione[1]);
+                    local.posizione[0] +=local.velocity[0];
+                    local.posizione[1] += local.velocity[1];
+                    point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 90:
-                    posizione[0] += velocity[0];
-                    posizione[1] += velocity[1];
-                    point.position.set(posizione[0], posizione[1]);
+                    local.posizione[0] += local.velocity[0];
+                    local.posizione[1] += local.velocity[1];
+                    point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 67:
-                    posizione[0] += velocity[0];
-                    posizione[1] += velocity[1];
-                    point.position.set(posizione[0], posizione[1]);
+                    local.posizione[0] += local.velocity[0];
+                    local.posizione[1] += local.velocity[1];
+                    point.position.set(local.posizione[0], local.posizione[1]);
                     break;
             }
         }
@@ -167,11 +198,11 @@
         function collider(){
             var dis = Math.sqrt(Math.pow(point.position.x-point2.position.x, 2)+Math.pow(point.position.y-point2.position.y, 2));
 
-            if(dis < 0.03 && ((Math.abs(velocity[0]) > Math.abs(velocity2[0])) || (Math.abs(velocity[1]) > Math.abs(velocity2[1])))){
+            if(dis < 0.03 && ((Math.abs(local.velocity[0]) > Math.abs(velocity2[0])) || (Math.abs(local.velocity[1]) > Math.abs(velocity2[1])))){
                 scene.remove(point2);
                 console.log("punto rimosso");
             }
-            else if(dis < 0.03 && ((Math.abs(velocity[0]) < Math.abs(velocity2[0])) || (Math.abs(velocity[1]) < Math.abs(velocity2[1])))){
+            else if(dis < 0.03 && ((Math.abs(local.velocity[0]) < Math.abs(velocity2[0])) || (Math.abs(local.velocity[1]) < Math.abs(velocity2[1])))){
                 scene.remove(point);
                 console.log("punto rimosso");
                     //funzione che aggiorna le variabili su host agg(poszione[],velocita[],player,!life,)if hasautorithy

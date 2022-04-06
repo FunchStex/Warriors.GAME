@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <script src='js/jquery-3.6.0.js'></script>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Warriors.GAME</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script src='js/three.min.js'></script>
+    <script src='js/TextGeometry.js'></script>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <style>
+        body{margin: 0;}
+        canvas{width: 100%; height: 100%;}
+    </style> 
+</head>
+<body>
+    <h1 class="titolo">Warriors.GAME</h1>
+    <script> 
+        let scene, camera, texture, pointGeo, pointMaterial, point, point2, renderer, tastiera, acc = 0.02;
+        var tasto, posizione=[0,0], velocity=[0,0], velocity2=[0,0], posizione2=[0,0];
+
+        function init(){
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 1000);
+            camera.position.z = 1;
+
+            renderer = new THREE.WebGLRenderer(); //Imposto come motore di render il motore web
+            renderer.setSize(window.innerWidth, window.innerHeight); //imposto la dimensione del render
+            document.body.appendChild(renderer.domElement);
+
+            texture = new THREE.TextureLoader().load('texture/textureFin.png');
+            pointGeo = new THREE.CircleGeometry(0.03, 16);
+            pointMaterial = new THREE.MeshBasicMaterial({map: texture});
+            point = new THREE.Mesh(pointGeo, pointMaterial);
+            point2 = new THREE.Mesh(pointGeo, pointMaterial);
+            
+            scene.add(point)
+            scene.add(point2);
+            //console.log("punto aggiunto");
+
+            point.position.set(1, 0, -1);
+            point2.position.set(-1, 0 ,-1);
+
+            posizione = [point.position.x, point.position.y];
+            posizione2 = [point2.position.x, point2.position.y];
+
+            render();
+        }      
+
+        function render(){
+            movement();
+            collider();
+
+            console.log(JSON.stringify(posizione));
+            console.log(JSON.stringify(velocity));
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(render);
+            //console.log("animazione avvenuta");
+        }
+
+        function movement(){
+            //campo
+            if(posizione[0]< -6/2 || posizione[0]> 6/2){
+                velocity[0]=0;
+                velocity[1]=0;
+                if(posizione[0]< -3/2){
+                    velocity[0] += acc;
+                }
+                else{
+                    velocity[0] -= acc;
+                }
+            };
+            if(posizione[1]< -3/2 || posizione[1]> 3/2){
+                velocity[0]=0; 
+                velocity[1]=0;
+                if(posizione[1]< -3/2){
+                    velocity[1] += acc;
+                }
+                else{
+                    velocity[1] -= acc;
+                }
+            };
+            //direzione
+            document.onkeydown = function(tastiera){
+                tasto=tastiera.keyCode;
+                switch(tastiera.keyCode){
+                    case 87:
+                        velocity[1] += acc;
+                        break;
+                    case 83:
+                        velocity[1] -= acc;
+                        break;
+                    case 65: 
+                        velocity[0] -= acc;
+                        break;
+                    case 68: 
+                        velocity[0] += acc;
+                        break;
+                    case 81:
+                        velocity[0] -= acc/2;
+                        velocity[1] += acc/2;
+                        break;
+                    case 69:
+                        velocity[0] += acc/2;
+                        velocity[1] += acc/2;
+                        break;
+                    case 90:
+                        velocity[0] -= acc/2;
+                        velocity[1] -= acc/2;
+                        break;
+                    case 67:
+                        velocity[0] += acc/2;
+                        velocity[1] -= acc/2;
+                        break;
+                }
+                //console.log(velocity);
+            }
+            //movimento
+            switch(tasto){
+                case 87:
+                    velocity[0] = 0;
+                    posizione[1] += velocity[1];
+                    point.position.set(posizione[0], posizione[1]);
+                    break;
+                case 83: 
+                    velocity[0] = 0;
+                    posizione[1] +=velocity[1];
+                    point.position.set(posizione[0], posizione[1]);
+                    break;
+                case 65:
+                    velocity[1] = 0; 
+                    posizione[0] += velocity[0];
+                    point.position.set(posizione[0], posizione[1]);
+                    break;
+                case 68: 
+                    velocity[1] = 0;
+                    posizione[0] += velocity[0];
+                    point.position.set(posizione[0], posizione[1]);
+                    //funzione che aggiorna le variabili su host agg(poszione[],velocita[],player,life,)
+                    break;
+                case 81:
+                    posizione[0] += velocity[0];
+                    posizione[1] += velocity[1];
+                    point.position.set(posizione[0], posizione[1]);
+                    break;
+                case 69:
+                    posizione[0] +=velocity[0];
+                    posizione[1] += velocity[1];
+                    point.position.set(posizione[0], posizione[1]);
+                    break;
+                case 90:
+                    posizione[0] += velocity[0];
+                    posizione[1] += velocity[1];
+                    point.position.set(posizione[0], posizione[1]);
+                    break;
+                case 67:
+                    posizione[0] += velocity[0];
+                    posizione[1] += velocity[1];
+                    point.position.set(posizione[0], posizione[1]);
+                    break;
+            }
+        }
+
+        //Da aggiustare in alcuni casi non funziona devo ancora capire il perchè
+        function collider(){
+            var dis = Math.sqrt(Math.pow(point.position.x-point2.position.x, 2)+Math.pow(point.position.y-point2.position.y, 2));
+
+            if(dis < 0.03 && ((Math.abs(velocity[0]) > Math.abs(velocity2[0])) || (Math.abs(velocity[1]) > Math.abs(velocity2[1])))){
+                scene.remove(point2);
+                console.log("punto rimosso");
+            }
+            else if(dis < 0.03 && ((Math.abs(velocity[0]) < Math.abs(velocity2[0])) || (Math.abs(velocity[1]) < Math.abs(velocity2[1])))){
+                scene.remove(point);
+                console.log("punto rimosso");
+                    //funzione che aggiorna le variabili su host agg(poszione[],velocita[],player,!life,)if hasautorithy
+            }
+        }
+        
+        init();
+        
+    </script>   
+</body>
+</html>

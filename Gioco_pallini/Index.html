@@ -7,7 +7,7 @@
     <title>Warriors.GAME</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <script src='js/three.min.js'></script>
-    <script src='js/TextGeometry.js'></script>
+    <!--<script src='js/TextGeometry.js'></script>-->
     <link href="style.css" rel="stylesheet" type="text/css">
     <style>
         body{margin: 0;}
@@ -16,8 +16,11 @@
        <script>
         function call() {
             var oReq = new XMLHttpRequest();
+            var oRis = new XMLHttpRequest();
             oReq.addEventListener("POST", reqListener);
-            oReq.open('POST', ' http://192.168.1.69:8000/', true);
+            oReq.open('POST', 'http://192.168.100.73:8000/', true);
+            oRis.open('GET', 'hhtp://192.168.100.73:8000/', true);
+            oRis.setRequestHeader("Content-Type", "application/json");
             oReq.setRequestHeader("Content-Type", "application/json");
             oReq.onreadystatechange = function () {
                     var json = JSON.stringify(oReq);
@@ -41,22 +44,35 @@
 </head>
 <body>
     <h1 class="titolo">Warriors.GAME</h1>
+    <button id="startbutton" onclick="bool()" class="bottone">Inizia</button>
 
     <script> 
+        var start = false;
+        
         class Player{
             constructor(posizione,velocity, id){
                 this.posizione=[0,0];
                 this.velocity=[0,0];
                 this.id;
+                this.vivo = true;
             }
 
         }
-        let scene, camera, texture, pointGeo, pointMaterial, point, point2, renderer, tastiera, acc = 0.02;
+
+        function bool(){
+            document.getElementById("startbutton").classList.remove('bottone');
+            document.getElementById("startbutton").classList.add('bottonen');
+            console.log("bottone rimosso");
+
+            init();
+        }
+
+        let scene, camera, texture, pointGeo, pointMaterial, point, point2, renderer, tastiera, acc = 0.02, dec = 0.0001;
         var tasto, posizione=[0,0], velocity=[0,0], velocity2=[0,0], posizione2=[0,0];
         var local= new Player();
         local.id = Math.floor(Math.random()*600);
         var Per=new Player();
-
+     
         function init(){
             scene = new THREE.Scene();
             scene.background = new THREE.TextureLoader().load('texture/bg.png');;
@@ -162,43 +178,67 @@
             switch(tasto){
                 case 87:
                     local.velocity[0] = 0;
-                    local.posizione[1] += local.velocity[1];
+                    local.posizione[1] += local.velocity[1];   
+                    if(local.velocity[1]>0){local.velocity[1] -= dec};
+                    if(local.velocity[1]<0.002 && local.velocity[1]>0){local.velocity[1]=0};
                     point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 83: 
                     local.velocity[0] = 0;
                     local.posizione[1] +=local.velocity[1];
+                    if(local.velocity[1]<0){local.velocity[1] += dec};
+                    if(local.velocity[1]<0.002 && local.velocity[1]>0){local.velocity[1]=0};
                     point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 65:
                     local.velocity[1] = 0; 
                     local.posizione[0] += local.velocity[0];
+                    if(local.velocity[0]<0){local.velocity[0] += dec};
+                    if(local.velocity[0]<0.002 && local.velocity[0]>0){local.velocity[0]=0};
                     point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 68: 
                     local.velocity[1] = 0;
                     local.posizione[0] += local.velocity[0];
+                    if(local.velocity[0]>0){local.velocity[0] -= dec};
+                    if(local.velocity[0]<0.002 && local.velocity[0]>0){local.velocity[0]=0};
                     point.position.set(local.posizione[0], local.posizione[1]);
                     //funzione che aggiorna le variabili su host agg(poszione[],velocita[],player,life,)
                     break;
                 case 81:
                     local.posizione[0] += local.velocity[0];
                     local.posizione[1] += local.velocity[1];
+                    if(local.velocity[1]>0){local.velocity[1] -= dec};
+                    if(local.velocity[1]<0.002 && local.velocity[1]>0){local.velocity[1]=0};
+                    if(local.velocity[0]<0){local.velocity[0] += dec};
+                    if(local.velocity[0]<0.002 && local.velocity[0]>0){local.velocity[0]=0};
                     point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 69:
                     local.posizione[0] +=local.velocity[0];
                     local.posizione[1] += local.velocity[1];
+                    if(local.velocity[1]>0){local.velocity[1] -= dec};
+                    if(local.velocity[1]<0.002 && local.velocity[1]>0){local.velocity[1]=0};
+                    if(local.velocity[0]>0){local.velocity[0] -= dec};
+                    if(local.velocity[0]<0.002 && local.velocity[0]>0){local.velocity[0]=0};
                     point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 90:
                     local.posizione[0] += local.velocity[0];
                     local.posizione[1] += local.velocity[1];
+                    if(local.velocity[0]<0){local.velocity[0] += dec};
+                    if(local.velocity[0]<0.002 && local.velocity[0]>0){local.velocity[0]=0};
+                    if(local.velocity[1]<0){local.velocity[1] += dec};
+                    if(local.velocity[1]<0.002 && local.velocity[1]>0){local.velocity[1]=0};
                     point.position.set(local.posizione[0], local.posizione[1]);
                     break;
                 case 67:
                     local.posizione[0] += local.velocity[0];
                     local.posizione[1] += local.velocity[1];
+                    if(local.velocity[0]>0){local.velocity[0] -= dec};
+                    if(local.velocity[0]<0.002 && local.velocity[0]>0){local.velocity[0]=0};
+                    if(local.velocity[1]<0){local.velocity[1] += dec};
+                    if(local.velocity[1]<0.002 && local.velocity[1]>0){local.velocity[1]=0};
                     point.position.set(local.posizione[0], local.posizione[1]);
                     break;
             }
@@ -208,18 +248,16 @@
         function collider(){
             var dis = Math.sqrt(Math.pow(point.position.x-point2.position.x, 2)+Math.pow(point.position.y-point2.position.y, 2));
 
-            if(dis < 0.03 && ((Math.abs(local.velocity[0]) > Math.abs(velocity2[0])) || (Math.abs(local.velocity[1]) > Math.abs(velocity2[1])))){
+            if(dis < 0.05 && ((Math.abs(local.velocity[0]) > Math.abs(velocity2[0])) || (Math.abs(local.velocity[1]) > Math.abs(velocity2[1])))){
                 scene.remove(point2);
                 console.log("punto rimosso");
             }
-            else if(dis < 0.03 && ((Math.abs(local.velocity[0]) < Math.abs(velocity2[0])) || (Math.abs(local.velocity[1]) < Math.abs(velocity2[1])))){
+            else if(dis < 0.05 && ((Math.abs(local.velocity[0]) < Math.abs(velocity2[0])) || (Math.abs(local.velocity[1]) < Math.abs(velocity2[1])))){
                 scene.remove(point);
                 console.log("punto rimosso");
                     //funzione che aggiorna le variabili su host agg(poszione[],velocita[],player,!life,)if hasautorithy
             }
         }
-        
-        init();
         
     </script>   
         

@@ -16,17 +16,17 @@
        <script>
         function call() {
             var oReq = new XMLHttpRequest();
-            var oRis = new XMLHttpRequest();
-            oReq.addEventListener("POST", reqListener);
+            oReq.addEventListener("load", reqListener);
             oReq.open('POST', 'http://192.168.100.73:8000/', true);
-            oRis.open('GET', 'hhtp://192.168.100.73:8000/', true);
-            oRis.setRequestHeader("Content-Type", "application/json");
             oReq.setRequestHeader("Content-Type", "application/json");
             oReq.onreadystatechange = function () {
                     var json = JSON.stringify(oReq);
+                    console.log(oReq.response);
+                    console.log("pachetto ricevuto");
             };
             var _data = JSON.stringify(local);
             oReq.send(_data);
+            clock=null;
         }
         function reqListener() {
             console.log("risposta");
@@ -47,6 +47,7 @@
     <button id="startbutton" onclick="bool()" class="bottone">Inizia</button>
 
     <script> 
+        var clock=null;
         var start = false;
         
         class Player{
@@ -105,15 +106,12 @@
         function render(){
             movement();
             collider();
-
             renderer.render(scene, camera);
             requestAnimationFrame(render);
-            //console.log("animazione avvenuta");
-            if(local.velocity[0]!=0||local.velocity[1]!=0)
-                call();
-            //point2.position.set(per.posizione[0],0,per.posizione[1]);
+            if(clock==null)
+                clock=setTimeout(call,100);
+            //call();
             point2.position.set(-1,0,-1);
-
         }
 
         function movement(){

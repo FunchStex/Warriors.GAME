@@ -14,22 +14,64 @@
         canvas{width: 100%; height: 100%;background-image: url("bg.png");}
     </style> 
        <script>
+        var oReq = null;
+        var numPlayer;
+        let  texture, pointGeo, pointMaterial;
+
+        class Player{
+            constructor(posizione,velocity, id,first){
+                this.posizione=[0,0];
+                this.velocity=[0,0];
+                this.id;
+                this.vivo = true;
+                this.first=true;
+            }
+            
+        }
+        Player.creaPunto=function(first){
+            if(first && this.id!=local.id){
+                    texture = new THREE.TextureLoader().load('texture/textureFin2.png');
+                    pointGeo = new THREE.PlaneGeometry(0.1, 0.1);
+                    pointMaterial = new THREE.MeshBasicMaterial({map: texture});
+                    texture = new THREE.TextureLoader().load('texture/textureFin2.png');
+                    point = new THREE.Mesh(pointGeo, pointMaterial);
+                    first=false;
+                    this.first=first;
+                    scene.add(point)
+                }
+
+        }
+
+        var player=[new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player()];
+
+
         function call() {
-            var oReq = new XMLHttpRequest();
+            oReq = new XMLHttpRequest();
             oReq.addEventListener("load", reqListener);
             oReq.open('POST', 'http://192.168.100.73:8000/', true);
             oReq.setRequestHeader("Content-Type", "application/json");
-            oReq.onreadystatechange = function () {
-                    var json = JSON.stringify(oReq);
-                    console.log(oReq.response);
-                    console.log("pachetto ricevuto");
-            };
+            oReq.onreadystatechange = function () {};
             var _data = JSON.stringify(local);
             oReq.send(_data);
             clock=null;
         }
         function reqListener() {
-            console.log("risposta");
+            var json = JSON.parse(oReq.response);
+
+
+            numPlayer=json.lenght;
+            for(var i = 0; i < 50; ++i){
+                if(json[i]!=null){
+                    player[i] = json[i];
+                    console.log(json[i].id);
+                    player[i].creaPunto(player[i].first);
+
+                }
+                //player[i].creaPunto(player[i].first);
+            }
+
+            
+            console.log();
         }
 
         function read(){
@@ -49,16 +91,6 @@
     <script> 
         var clock=null;
         var start = false;
-        
-        class Player{
-            constructor(posizione,velocity, id){
-                this.posizione=[0,0];
-                this.velocity=[0,0];
-                this.id;
-                this.vivo = true;
-            }
-
-        }
 
         function bool(){
             document.getElementById("startbutton").classList.remove('bottone');
@@ -68,11 +100,11 @@
             init();
         }
 
-        let scene, camera, texture, pointGeo, pointMaterial, point, point2, renderer, tastiera, acc = 0.02, dec = 0.0001;
+        let scene, camera, point, point2, renderer, tastiera, acc = 0.02, dec = 0.0001;
         var tasto, posizione=[0,0], velocity=[0,0], velocity2=[0,0], posizione2=[0,0];
         var local= new Player();
-        local.id = Math.floor(Math.random()*600);
-        var Per=new Player();
+        local.id = Math.floor(Math.random()*50);
+        //var Per=new Player();
      
         function init(){
             scene = new THREE.Scene();
@@ -87,12 +119,13 @@
             texture = new THREE.TextureLoader().load('texture/textureFin2.png');
             pointGeo = new THREE.PlaneGeometry(0.1, 0.1);
             pointMaterial = new THREE.MeshBasicMaterial({map: texture});
+
             point = new THREE.Mesh(pointGeo, pointMaterial);
             point2 = new THREE.Mesh(pointGeo, pointMaterial);
             
-            scene.add(point)
-            scene.add(point2);
-            //console.log("punto aggiunto");
+            //scene.add(point);
+            //scene.add(point2);
+            console.log("punto aggiunto");
 
             point.position.set(1, 0, -1);
             point2.position.set(-1, 0 ,-1);
@@ -110,13 +143,11 @@
             requestAnimationFrame(render);
             if(clock==null)
                 clock=setTimeout(call,100);
-            //call();
-            point2.position.set(-1,0,-1);
+            //point2.position.set(-1,0,-1);
         }
 
         function movement(){
             //campo
-            console.log(window.innerWidth/1000);
             if(local.posizione[0]< -2.7 || local.posizione[0]> 2.8){
                 local.velocity[0]=0;
                 local.velocity[1]=0;

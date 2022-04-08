@@ -115,7 +115,8 @@
             
             for(var i=0;i<pers;i++){
               point[idp].position.z=-1;
-              scene.add(point[i])
+              scene.add(point[i]);
+              if(json[i].vivo == false){scene.remove(point[i])};
             }
             tick=false
           }

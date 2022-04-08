@@ -94,17 +94,14 @@
         if (local.id == token) {
           if(tick){
             pers=json[token].persone
+            local.id = json[token].persone;
             tick=false
           }
-          local.id = json[token].persone;
         }
         if(pers!=json[1].persone)pers=json[1].persone
-        console.log(pers);
-
 
         //METTERE PER TUTTI STA COSA
         console.log(json);
-        //console.log(pers)
         for(var i=1;i<pers;i++){
           if(local.id!=player[i].id){
             point2.position.set(json[i].posizione[0],json[i].posizione[1],-1);

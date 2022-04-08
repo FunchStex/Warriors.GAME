@@ -138,6 +138,8 @@
         }
       }
 
+      if(json[1].apple == true){spawnapple()};
+
       //#endregion
       //#region set postion for all player
 
@@ -402,6 +404,18 @@
           console.log("punto rimosso");
           //funzione che aggiorna le variabili su host agg(poszione[],velocita[],player,!life,)if hasautorithy
         }
+      }
+
+      function spawnapple(){
+        var appleGeometry, appleTexture, appleMaterial, aplle;
+
+        appleTexture = new THREE.TextureLoader().load('texture/apple.png');
+        appleGeometry = new THREE.PlaneGeometry(0.05, 0.05);
+        appleMaterial = new THREE.MeshBasicMaterial({map: appleTexture});
+
+        apple = new THREE.Mesh(appleGeometry, appleMaterial)
+
+        apple.position.set(); //Manca lo spawn randomico e il fatto che se un player la prende la toglie e se la prende sto player da una vita
       }
 
       //#endregion movment

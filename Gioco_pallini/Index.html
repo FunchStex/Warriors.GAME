@@ -121,11 +121,11 @@
           }
         }
         //if(pers!=json[1].persone)pers=json[1].persone
-        //pers=json[0].persone;
+        pers=json[1].persone-1;
 
         //METTERE PER TUTTI STA COSA
         console.log(json);
-        for(var i=1;i<pers;i++){
+        for(var i=1;i<=pers;i++){
           console.log("poszione agg");
           //if(local.id!=json[i].id){
             point[i-1].position.set(json[i].posizione[0],json[i].posizione[1],-1);

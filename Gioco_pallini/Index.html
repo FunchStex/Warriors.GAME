@@ -52,6 +52,7 @@
       let texture, pointGeo, pointMaterial;
 
       var player = [new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),];
+      
 
       let scene,
         camera,
@@ -98,14 +99,14 @@
             tick=false
           }
         }
-        if(pers!=json[1].persone)pers=json[1].persone
+        //if(pers!=json[1].persone)pers=json[1].persone
+        pers=json[1].persone;
 
         //METTERE PER TUTTI STA COSA
         console.log(json);
         for(var i=1;i<pers;i++){
-          if(local.id!=player[i].id){
-            point2.position.set(json[i].posizione[0],json[i].posizione[1],-1);
-            
+          if(local.id!=json[i].id){
+            point[i].position.set(json[i].posizione[0],json[i].posizione[1],-1);
           }
         }
       }
@@ -152,16 +153,29 @@
         pointGeo = new THREE.PlaneGeometry(0.1, 0.1);
         pointMaterial = new THREE.MeshBasicMaterial({ map: texture });
 
-        point = new THREE.Mesh(pointGeo, pointMaterial);
-        point2 = new THREE.Mesh(pointGeo, pointMaterial);
+        var point = [new THREE.Mesh(pointGeo, pointMaterial), 
+                    new THREE.Mesh(pointGeo, pointMaterial),  
+                    new THREE.Mesh(pointGeo, pointMaterial),  
+                    new THREE.Mesh(pointGeo, pointMaterial),  
+                    new THREE.Mesh(pointGeo, pointMaterial),  
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial)];
 
-        point.position.set(1, 0, -1);
-        point2.position.set(-1, 0, -1);
-        scene.add(point);
-        scene.add(point2)
+        //point = new THREE.Mesh(pointGeo, pointMaterial);
+        //point2 = new THREE.Mesh(pointGeo, pointMaterial);
+
+        point[0].position.set(1, 0, -1);
+        point[1].position.set(-1, 0, -1);
+        scene.add(point[0]);
+        scene.add(point[1])
 
         //local.posizione = [point.position.x, point.position.y];
-        posizione2 = [point2.position.x, point2.position.y];
+        posizione2 = [point[1].position.x, point[1].position.y];
 
         render();
       }
@@ -245,7 +259,7 @@
             if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
               local.velocity[1] = 0;
             }
-            point.position.set(local.posizione[0], local.posizione[1]);
+            point[local.id].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 83:
             local.velocity[0] = 0;
@@ -256,7 +270,7 @@
             if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
               local.velocity[1] = 0;
             }
-            point.position.set(local.posizione[0], local.posizione[1]);
+            point[local.id].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 65:
             local.velocity[1] = 0;
@@ -267,7 +281,7 @@
             if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
               local.velocity[0] = 0;
             }
-            point.position.set(local.posizione[0], local.posizione[1]);
+            point[local.id].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 68:
             local.velocity[1] = 0;
@@ -278,7 +292,7 @@
             if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
               local.velocity[0] = 0;
             }
-            point.position.set(local.posizione[0], local.posizione[1]);
+            point[local.id].position.set(local.posizione[0], local.posizione[1]);
             //funzione che aggiorna le variabili su host agg(poszione[],velocita[],player,life,)
             break;
           case 81:
@@ -296,7 +310,7 @@
             if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
               local.velocity[0] = 0;
             }
-            point.position.set(local.posizione[0], local.posizione[1]);
+            point[local.id].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 69:
             local.posizione[0] += local.velocity[0];
@@ -313,7 +327,7 @@
             if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
               local.velocity[0] = 0;
             }
-            point.position.set(local.posizione[0], local.posizione[1]);
+            point[local.id].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 90:
             local.posizione[0] += local.velocity[0];
@@ -330,7 +344,7 @@
             if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
               local.velocity[1] = 0;
             }
-            point.position.set(local.posizione[0], local.posizione[1]);
+            point[local.id].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 67:
             local.posizione[0] += local.velocity[0];
@@ -347,7 +361,7 @@
             if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
               local.velocity[1] = 0;
             }
-            point.position.set(local.posizione[0], local.posizione[1]);
+            point[local.id].position.set(local.posizione[0], local.posizione[1]);
             break;
         }
       }

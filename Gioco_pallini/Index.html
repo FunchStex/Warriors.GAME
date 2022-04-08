@@ -98,16 +98,17 @@
           }
           local.id = json[token].persone;
         }
+        if(pers!=json[1].persone)pers=json[1].persone
         console.log(pers);
 
 
         //METTERE PER TUTTI STA COSA
-        console.log(json[1]);
+        console.log(json);
         //console.log(pers)
-        point2.position.set(json[2].posizione[0],json[2].posizione[1],-1);
         for(var i=1;i<pers;i++){
           if(local.id!=player[i].id){
-
+            point2.position.set(json[i].posizione[0],json[i].posizione[1],-1);
+            
           }
         }
       }

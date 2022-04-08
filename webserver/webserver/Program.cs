@@ -18,8 +18,8 @@ namespace BasicWeb
 
         public static HttpListener listener;
         static HttpClient client= new HttpClient();
-        public static string url = "http://192.168.1.69:8000/";
-        public static int pageViews = 0;
+        public static string url = "http://192.168.100.73:8000/";
+        public static int pageViews = -1;
         public static int requestCount = 0;
 
        public static Dictionary<string, Pachetto> dataset = new Dictionary<string, Pachetto>();
@@ -42,7 +42,7 @@ namespace BasicWeb
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
                 HttpClient client = new HttpClient();
-                var request = new HttpRequestMessage(HttpMethod.Post,"http://192.168.1.69:8080");
+                var request = new HttpRequestMessage(HttpMethod.Post,url);
 
 
                 //var rx = new Regex(@"\b(?<word>\w+)\s+(\k<word>)\b";
@@ -77,7 +77,7 @@ namespace BasicWeb
                     {
                         if (player.id > 100)
                         {
-                            Console.WriteLine(player.persone);
+                            //Console.WriteLine(player.persone);
                             player.persone = pageViews;
                             pageViews++;
 
@@ -86,8 +86,11 @@ namespace BasicWeb
 
 
 
-                        Console.WriteLine(player.id.ToString());
                         dataset[player.id.ToString()] = player;
+                        foreach(KeyValuePair<string, Pachetto> kvp in dataset)
+                        {
+                            kvp.Value.persone = pageViews;
+                        }
                         string data = System.Text.Json.JsonSerializer.Serialize(dataset);
                         request.Content = new StringContent(data,Encoding.UTF8,"application/json");
 
@@ -106,7 +109,7 @@ namespace BasicWeb
                 //contolla chi e morto
                 foreach (KeyValuePair<string, Pachetto> kvp in dataset)
                 {
-                    Console.WriteLine("Key: {0}, Value x: {1}, Value y:{2}, vita:{3}", kvp.Key, kvp.Value.posizione[0],kvp.Value.posizione[1],kvp.Value.vivo);
+                    Console.WriteLine("Key: {0}, Value x: {1}, Value y:{2}, vita:{3},player online: {4}", kvp.Key, kvp.Value.posizione[0],kvp.Value.posizione[1],kvp.Value.vivo,kvp.Value.persone);
                     float x=kvp.Value.posizione[0];
                     float y = kvp.Value.posizione[1];
                     float vx=kvp.Value.velocity[0];
@@ -115,6 +118,7 @@ namespace BasicWeb
                     foreach (KeyValuePair<string, Pachetto> kvp2 in dataset)
                         if(x==kvp2.Value.posizione[0]&&y==kvp2.Value.posizione[1])
                         {
+                            float dis;
                             if (vx > kvp2.Value.velocity[0] || vy > kvp2.Value.velocity[1])
                                 dataset[kvp2.Key].vivo = false;
                         }

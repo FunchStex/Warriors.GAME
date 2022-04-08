@@ -89,6 +89,7 @@
       var tick=true;
       var pers;
       var idp;
+      var ricevuto=0;
 
       //#endregion
 
@@ -96,26 +97,27 @@
       function call() {
         oReq = new XMLHttpRequest();
         oReq.addEventListener("load", reqListener);
+        oReq.addEventListener("load", prova);
         oReq.open("POST", "http://192.168.100.73:8000/", true);
         oReq.setRequestHeader("Content-Type", "application/json");
-        oReq.onreadystatechange = function () {};
         var _data = JSON.stringify(local);
         oReq.send(_data);
         clock = null;
       }
-
+      function prova(){
+        
+      }
       function reqListener() {
         var json = JSON.parse(oReq.response);
-        
-        
-        
         //assegna token
         if (local.id == token) {
-          if(tick &&!clock){
+          ricevuto++;
+          console.log(ricevuto);
+          if(tick){
             pers=json[token].persone
             local.id = json[token].persone;
+            ricevuto=true;
             idp=local.id-1;
-            
             for(var i=0;i<pers;i++){
               point[idp].position.z=-1;
               scene.add(point[i]);           
@@ -163,8 +165,8 @@
         document.getElementById("startbutton").classList.remove("bottone");
         document.getElementById("startbutton").classList.add("bottonen");
         console.log("bottone rimosso");
-
-        init();
+        call();
+        setTimeout(init, 1000);
       }
       //#endregion
 
@@ -205,10 +207,9 @@
       //#region render
       function render() {
         movement();
-        //collider();
         renderer.render(scene, camera);
+        if (clock == null) clock = setTimeout(call, 50);
         requestAnimationFrame(render);
-        if (clock == null) clock = setTimeout(call, 100);
 
       }
       //#endregion
@@ -414,13 +415,10 @@
 
       /*function spawnapple(){
         var appleGeometry, appleTexture, appleMaterial, aplle;
-
         appleTexture = new THREE.TextureLoader().load('texture/apple.png');
         appleGeometry = new THREE.PlaneGeometry(0.05, 0.05);
         appleMaterial = new THREE.MeshBasicMaterial({map: appleTexture});
-
         apple = new THREE.Mesh(appleGeometry, appleMaterial)
-
         apple.position.set(); //Manca lo spawn randomico e il fatto che se un player la prende la toglie e se la prende sto player da una vita
       }*/
       //FUNZIONE SPAWN MELA NON TOGLIERE

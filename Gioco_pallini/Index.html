@@ -112,8 +112,11 @@
             pers=json[token].persone
             local.id = json[token].persone;
             idp=local.id-1;
-            scene.add(point[idp]);
-
+            
+            for(var i=0;i<pers;i++){
+              point[idp].position.z=-1;
+              scene.add(point[i])
+            }
             tick=false
           }
         }
@@ -123,8 +126,9 @@
         //METTERE PER TUTTI STA COSA
         console.log(json);
         for(var i=1;i<pers;i++){
+          console.log("poszione agg");
           //if(local.id!=json[i].id){
-            //point[i].position.set(json[i].posizione[0],json[i].posizione[1],-1);
+            point[i-1].position.set(json[i].posizione[0],json[i].posizione[1],-1);
           //}
         }
       }

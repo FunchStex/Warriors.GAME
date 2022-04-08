@@ -78,7 +78,7 @@
       function call() {
         oReq = new XMLHttpRequest();
         oReq.addEventListener("load", reqListener);
-        oReq.open("POST", "http://192.168.1.69:8000/", true);
+        oReq.open("POST", "http://192.168.100.73:8000/", true);
         oReq.setRequestHeader("Content-Type", "application/json");
         oReq.onreadystatechange = function () {};
         var _data = JSON.stringify(local);
@@ -88,15 +88,23 @@
 
       function reqListener() {
         var json = JSON.parse(oReq.response);
-        //console.log(local.id, json);
+        
         if (local.id == token) {
+          var pers=json[token].persone
           local.id = json[token].persone;
+          console.log(json[token].persone);
         }
 
 
         //METTERE PER TUTTI STA COSA
-        point2.position.set(json[1].posizione[0],0,json[1].position[1]);
-        console.log(json[1].posizione[1]);
+        console.log(json[1]);
+        //console.log(pers)
+        point2.position.set(json[2].posizione[0],json[2].posizione[1],-1);
+        for(var i=1;i<pers;i++){
+          if(local.id!=player[i].id){
+
+          }
+        }
       }
 
       //#endregion
@@ -159,7 +167,7 @@
       //#region render
       function render() {
         movement();
-        collider();
+        //collider();
         renderer.render(scene, camera);
         requestAnimationFrame(render);
         if (clock == null) clock = setTimeout(call, 100);

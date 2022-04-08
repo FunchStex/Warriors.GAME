@@ -107,6 +107,9 @@
       function reqListener() {
         var json = JSON.parse(oReq.response);
         
+        
+        
+        //assegna token
         if (local.id == token) {
           if(tick){
             pers=json[token].persone
@@ -115,27 +118,27 @@
             
             for(var i=0;i<pers;i++){
               point[idp].position.z=-1;
-              scene.add(point[i]);
-              if(json[i].vivo == false){scene.remove(point[i])};
+              scene.add(point[i]);           
             }
             tick=false
           }
         }
-        //if(pers!=json[1].persone)pers=json[1].persone
+        
+        
+        //aggigi persona 
         pers=json[1].persone-1;
         if(pers<json[1].persone){
-          
           scene.add(point[pers]);
           point[pers].position.z=-1;
+          //if(json[i].vivo == false){scene.remove(point[i])};
         }
-
-        //METTERE PER TUTTI STA COSA
+        
+        //cambia poszione
         console.log(json);
         for(var i=1;i<=pers+1;i++){
           console.log("poszione agg");
-          //if(local.id!=json[i].id){
             point[i-1].position.set(json[i].posizione[0],json[i].posizione[1],-1);
-          //}
+            if(json[idp].vivo == false){scene.remove(point[local.id]);local.vivo = false};
         }
       }
       

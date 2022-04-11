@@ -7,7 +7,6 @@
     <title>Warriors.GAME</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="js/three.min.js"></script>
-    <!--<script src='js/TextGeometry.js'></script>-->
     <link href="style.css" rel="stylesheet" type="text/css" />
 
     <style>
@@ -28,10 +27,12 @@
           this.posizione = [0, 0];
           this.velocity = [0, 0];
           this.id;
-          this.vivo = true;
+          this.vivo = 2;
           this.first = true;
         }
       }
+      var appleGeometry, appleTexture, appleMaterial, apple, appleAlphaTexture;
+      var json;
 
       //#endregion
 
@@ -98,7 +99,7 @@
         
       }
       function reqListener() {
-        var json = JSON.parse(oReq.response);
+        json = JSON.parse(oReq.response);
         //assegna token
         if (local.id == token) {
           ricevuto++;
@@ -116,18 +117,23 @@
         if(pers!=json[1].persone){
           scene.add(point[pers]);
           point[pers].position.z=-1;
-          pers=json[1].persone;
-          console.log("perona entrata"+pers); 
+          pers=json[1].persone; 
         }
         
         //cambia poszione
         console.log(json);
         for(var i=1;i<=pers;i++){
-            point[i-1].position.set(json[i].posizione[0],json[i].posizione[1],-1);
-            console.log(i);
-            //if(json[i-1].vivo == false){scene.remove(point[i]);}
-            //if(json[idp-1].vivo==false)local.vivo=false;
+          point[i-1].position.set(json[i].posizione[0],json[i].posizione[1],-1);
         }
+        for(var i=1;i<=pers;i++){
+          if(json[i].vivo < 0){scene.remove(point[i-1])};
+          if(json[idp].vivo != local.vivo){local.vivo=json[idp].vivo};        
+        }
+
+        //SPAWN MELA NON TOGLIERE
+        console.log(json[1].apple)
+        if(json[1].apple == true){spawnapple()};
+        
       }
       function addpoint(){
           for(var i=0;i<pers;i++){
@@ -135,8 +141,6 @@
               scene.add(point[i]);           
           }
         }
-      //SPAWN MELA NON TOGLIERE
-      //if(json[1].apple == true){spawnapple()};
 
       //#endregion
       //#region set postion for all player
@@ -147,6 +151,7 @@
 
   <body>
     <h1 class="titolo">Warriors.GAME</h1>
+    <!--<h1 class="titolo_a_capo">Vite: <script>document.write(this.vivo)</script></h1>-->
     <button id="startbutton" onclick="bool()" class="bottone">Inizia</button>
 
     <script>
@@ -188,6 +193,7 @@
       //#region render
       function render() {
         movement();
+        playerPrediction();
         renderer.render(scene, camera);
         if (clock == null) clock = setTimeout(call, 50);
         requestAnimationFrame(render);
@@ -370,22 +376,27 @@
       }
 
       function playerPrediction(){
-        for(var i=0;i<pers+1;i++){
-          //var prediciotn=json[1].position
-          point[i-1].position.set(json[i].posizione[0],json[i].posizione[1],-1);
+        for(var i=1;i<=pers;i++){
+          if(json[i-1].id != local.id){
+            point[i-1].position.set(json[i].posizione[0]+json[i].velocity[0],json[i].posizione[1]+json[i].velocity[1],-1);
+          }
         }
       }
-      /*function spawnapple(){
-        var appleGeometry, appleTexture, appleMaterial, aplle;
-        appleTexture = new THREE.TextureLoader().load('texture/apple.png');
-        appleGeometry = new THREE.PlaneGeometry(0.05, 0.05);
-        appleMaterial = new THREE.MeshBasicMaterial({map: appleTexture});
-        apple = new THREE.Mesh(appleGeometry, appleMaterial)
-        apple.position.set(); //Manca lo spawn randomico e il fatto che se un player la prende la toglie e se la prende sto player da una vita
-      }*/
-      //FUNZIONE SPAWN MELA NON TOGLIERE
-
       //#endregion movment
+
+      //#region apple
+
+      function spawnapple(){       
+        appleTexture = new THREE.TextureLoader().load('texture/mela.png');
+        appleAplhaTexture = new THREE.TextureLoader().load('texture/alphamela.png');
+        appleGeometry = new THREE.PlaneGeometry(0.1, 0.1);
+        appleMaterial = new THREE.MeshBasicMaterial({map:appleTexture, alphaMap: appleAlphaTexture, transparent: true, depthWrite: true});
+        apple = new THREE.Mesh(appleGeometry, appleMaterial)
+        apple.position.set(json[1].applex,json[1].appley,-1); //Manca lo spawn randomico e il fatto che se un player la prende la toglie e se la prende sto player da una vita
+        scene.add(apple);
+      }
+      //#endregion apple
+
     </script>
   </body>
 </html>

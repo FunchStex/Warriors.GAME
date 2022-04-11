@@ -23,12 +23,12 @@
     <script>
       //#region classi
       class Player {
-        constructor(posizione, velocity, id, first) {
+        constructor(posizione, velocity, id, apple) {
           this.posizione = [0, 0];
           this.velocity = [0, 0];
           this.id;
           this.vivo = 2;
-          this.first = true;
+          this.apple=false;
         }
       }
       var appleGeometry, appleTexture, appleMaterial, apple, json;
@@ -130,15 +130,20 @@
           if(json[idp].vivo != local.vivo){local.vivo=json[idp].vivo};        
         }
 
-        //SPAWN MELA NON TOGLIERE
-        if(json[1].apple == true){spawnapple()};
+        //SPAWN MELA 
+        if(json[1].apple == true){
+          spawnapple();
+          console.log(json[1].apple)
+          json[1].apple=false;
+          local.apple=false;
+        }
 
       }
       function playerPrediction(){
         for(var i=1;i<pers;i++){
-          if(json[i].id != local.id){
-            point[i-1].position.set(json[i].posizione[0]+json[i].velocity[0],json[i].posizione[1]+json[i].velocity[1],-1);
-          }
+          console.log(i);
+          point[i-1].position.set(point[i-1].position.x+json[i].velocity[0],point[i-1].position.y+json[i].velocity[1],-1);
+          
         }
       }
     
@@ -202,7 +207,7 @@
         movement();
         renderer.render(scene, camera);
         if (clock == null){
-          clock = setTimeout(call, 50); 
+          clock = setTimeout(call, 40); 
         } 
         playerPrediction();
         requestAnimationFrame(render);

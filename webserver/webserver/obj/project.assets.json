@@ -4637,7 +4637,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Thomas\\.nuget\\packages\\": {}
+    "C:\\Users\\Utente\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -4645,11 +4645,11 @@
       "projectUniqueName": "E:\\webserver\\webserver\\webserver.csproj",
       "projectName": "webserver",
       "projectPath": "E:\\webserver\\webserver\\webserver.csproj",
-      "packagesPath": "C:\\Users\\Thomas\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\Utente\\.nuget\\packages\\",
       "outputPath": "E:\\webserver\\webserver\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Thomas\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Utente\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

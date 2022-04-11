@@ -11,7 +11,14 @@ namespace BasicWeb
         public float[] posizione { get; set; }
         public float[] velocity { get; set; }
         public int id { get; set; }
-        public bool vivo { get; set; }
+        public int vivo { get; set; } = 2;
+        public int persone {  get; set; }
+        public bool apple { get; set; } = false;
+        public float applex { get; set; }
+        public float appley { get; set; }
+        public bool Colpito { get; set; } = true;
+        public float Time { get; set; } = 5;
+
 
     }
 }

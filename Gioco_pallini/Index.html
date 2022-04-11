@@ -111,6 +111,8 @@
             tick=false
           }
         }
+        else{
+        }
         
         //aggigi persona 
         if(pers!=json[1].persone){
@@ -120,7 +122,6 @@
         }
         
         //cambia poszione
-        console.log(json);
         for(var i=1;i<=pers;i++){
           point[i-1].position.set(json[i].posizione[0],json[i].posizione[1],-1);
         }
@@ -130,23 +131,23 @@
         }
 
         //SPAWN MELA NON TOGLIERE
-        console.log(json[1].apple)
         if(json[1].apple == true){spawnapple()};
 
       }
       function playerPrediction(){
-      for(var i=1;i<=pers;i++){
-        if(json[i-1].id != local.id){
-          point[i-1].position.set(json[i].posizione[0]+json[i].velocity[0],json[i].posizione[1]+json[i].velocity[1],-1);
-        }
-      }
-    }
-      function addpoint(){
-          for(var i=0;i<pers;i++){
-              point[idp-1].position.z=-1;
-              scene.add(point[i]);           
+        for(var i=1;i<pers;i++){
+          if(json[i].id != local.id){
+            point[i-1].position.set(json[i].posizione[0]+json[i].velocity[0],json[i].posizione[1]+json[i].velocity[1],-1);
           }
         }
+      }
+    
+    function addpoint(){
+        for(var i=0;i<pers;i++){
+            point[idp-1].position.z=-1;
+            scene.add(point[i]);           
+        }
+      }
 
       //#endregion
       //#region set postion for all player
@@ -200,9 +201,11 @@
       function render() {
         movement();
         renderer.render(scene, camera);
-        if (clock == null) clock = setTimeout(call, 50);
+        if (clock == null){
+          clock = setTimeout(call, 50); 
+        } 
+        playerPrediction();
         requestAnimationFrame(render);
-        //playerPrediction();
       }
       //#endregion
 

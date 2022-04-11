@@ -16,7 +16,7 @@
       canvas {
         width: 100%;
         height: 100%;
-        background-image: url("bg.png");
+        background-image: url('texture/bg.png');
       }
     </style>
 
@@ -31,8 +31,7 @@
           this.first = true;
         }
       }
-      var appleGeometry, appleTexture, appleMaterial, apple, appleAlphaTexture;
-      var json;
+      var appleGeometry, appleTexture, appleMaterial, apple, json;
 
       //#endregion
 
@@ -133,8 +132,15 @@
         //SPAWN MELA NON TOGLIERE
         console.log(json[1].apple)
         if(json[1].apple == true){spawnapple()};
-        
+
       }
+      function playerPrediction(){
+      for(var i=1;i<=pers;i++){
+        if(json[i-1].id != local.id){
+          point[i-1].position.set(json[i].posizione[0]+json[i].velocity[0],json[i].posizione[1]+json[i].velocity[1],-1);
+        }
+      }
+    }
       function addpoint(){
           for(var i=0;i<pers;i++){
               point[idp-1].position.z=-1;
@@ -196,7 +202,7 @@
         renderer.render(scene, camera);
         if (clock == null) clock = setTimeout(call, 50);
         requestAnimationFrame(render);
-
+        //playerPrediction();
       }
       //#endregion
 
@@ -374,18 +380,10 @@
         }
       }
 
-      function playerPrediction(){
-        for(var i=0;i<pers+1;i++){
-          //var prediciotn=json[1].position
-          point[i-1].position.set(json[i].posizione[0],json[i].posizione[1],-1);
-        }
-      }
-
       function spawnapple(){       
         appleTexture = new THREE.TextureLoader().load('texture/mela.png');
-        appleAplhaTexture = new THREE.TextureLoader().load('texture/alphamela.png');
         appleGeometry = new THREE.PlaneGeometry(0.1, 0.1);
-        appleMaterial = new THREE.MeshBasicMaterial({map:appleTexture, alphaMap: appleAlphaTexture, transparent: true, depthWrite: true});
+        appleMaterial = new THREE.MeshBasicMaterial({map:appleTexture, transparent: true, depthWrite: true});
         apple = new THREE.Mesh(appleGeometry, appleMaterial)
         apple.position.set(json[1].applex,json[1].appley,-1); //Manca lo spawn randomico e il fatto che se un player la prende la toglie e se la prende sto player da una vita
         scene.add(apple);

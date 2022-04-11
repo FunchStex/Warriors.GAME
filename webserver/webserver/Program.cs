@@ -48,8 +48,8 @@ namespace BasicWeb
         }
         public static void SpawnApple()
         {
-    
-            if (dataset["1"]!=null&&MeleCount<=5)
+
+            if (dataset.Count>0&& MeleCount <= 5 && Spawn)
             {
                 Random random = new Random();
 
@@ -58,13 +58,19 @@ namespace BasicWeb
                 dataset["1"].appley = (float)random.NextDouble() * (float)2.35;
                 dataset["1"].appley -= (float)1.25;
                 dataset["1"].apple = true;
-                Postionx[MeleCount]=dataset["1"].applex;
-                Postiony[MeleCount]=dataset["1"].appley;
+                Postionx[MeleCount] = dataset["1"].applex;
+                Postiony[MeleCount] = dataset["1"].appley;
                 MeleCount++;
-                Console.WriteLine("pozione cambiata x{0},y{1},Mele: {2}",dataset["1"].appley, dataset["1"].applex,MeleCount);
+                Console.WriteLine("pozione cambiata x{0},y{1},Mele: {2}", dataset["1"].appley, dataset["1"].applex, MeleCount);
                 Spawn = false;
+
             }
-            else if(dataset["1"]!=null) dataset["1"].apple = false;
+            else if (dataset.Count>0&&!Spawn)
+            {
+                dataset["1"].apple = false;
+                Console.WriteLine(dataset["1"].apple);
+                Spawn = true;
+            }
         }
         public static async Task CheckDeath()
         {
@@ -135,7 +141,7 @@ namespace BasicWeb
                 }
             }
         }
-        public static async Task intattivita()
+        public static async Task inattivita()
         {
             foreach(KeyValuePair<string, Pachetto> kvp in dataset)
             {
@@ -154,7 +160,30 @@ namespace BasicWeb
 
         }
 
+        public static void calcolo()
+        {
+            foreach (KeyValuePair<string, Pachetto> kvp in dataset)
+            {
+                kvp.Value.persone = pageViews;
 
+            }
+            if (Timer <= 0)
+            {
+                SpawnApple();
+                SetRandom();
+            }
+            else Timer -= (float)0.1;
+            CheckDeath();
+
+
+
+
+            foreach (KeyValuePair<string, Pachetto> kvp in dataset)
+            {
+                Console.WriteLine("Key: {0}, Value x: {1}, Value y:{2}, vita:{3},player online: {4},apple x{5},y{6},{7}", kvp.Key, kvp.Value.posizione[0], kvp.Value.posizione[1], kvp.Value.vivo, kvp.Value.persone, kvp.Value.applex, kvp.Value.appley, kvp.Value.apple);
+
+            }
+        }
         public static async Task HandleIncomingConnections()
         {
             bool runServer = true;
@@ -165,7 +194,6 @@ namespace BasicWeb
                 HttpListenerContext ctx = await listener.GetContextAsync();
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
-                HttpClient client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Post,url);
 
 
@@ -204,30 +232,13 @@ namespace BasicWeb
 
 
                         dataset[player.id.ToString()] = player;
-                        foreach(KeyValuePair<string, Pachetto> kvp in dataset)
-                        {
-                            kvp.Value.persone = pageViews;
-                            kvp.Value.apple = true;
+                        await Task.Run(() => {
+                            calcolo();
+                          });
+                        await Task.Run(() => {
+                            //inattivita();
+                        });
 
-                        }
-                        if (Timer <= 0)
-                        {
-                            SpawnApple();
-                            SetRandom();
-                        }
-                        else Timer -=(float) 0.1;
-                        CheckDeath();
-    
-                        
-                        //intattivita();
-
-
-
-                        foreach (KeyValuePair<string, Pachetto> kvp in dataset)
-                        {
-                            Console.WriteLine("Key: {0}, Value x: {1}, Value y:{2}, vita:{3},player online: {4},apple x{5},y{6},{7}", kvp.Key, kvp.Value.posizione[0], kvp.Value.posizione[1], kvp.Value.vivo, kvp.Value.persone,kvp.Value.applex,kvp.Value.appley,kvp.Value.apple);
-
-                        }
                         string data = System.Text.Json.JsonSerializer.Serialize(dataset);
                         request.Content = new StringContent(data,Encoding.UTF8,"application/json");
 

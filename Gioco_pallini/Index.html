@@ -7,7 +7,7 @@
     <title>Warriors.GAME</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="js/three.min.js"></script>
-    <link type="text/css" href="style.css" rel="stylesheet"/>
+    <link href="style.css" rel="stylesheet" type="text/css" />
 
     <style>
       body {
@@ -95,22 +95,18 @@
       function call() {
         oReq = new XMLHttpRequest();
         oReq.addEventListener("load", reqListener);
-        oReq.addEventListener("load", prova);
         oReq.open("POST", "http://192.168.100.73:8000/", true);
         oReq.setRequestHeader("Content-Type", "application/json");
         var _data = JSON.stringify(local);
         oReq.send(_data);
         clock = null;
       }
-      function prova(){
-        
-      }
+
       function reqListener() {
         json = JSON.parse(oReq.response);
         //assegna token
         if (local.id == token) {
           ricevuto++;
-          console.log(ricevuto);
           if(tick){
             local.id = json[token].persone;
             pers=json[token].persone
@@ -119,9 +115,8 @@
             tick=false
           }
         }
-        else{
-        }
-        
+        console.log(json[idp].vivo);
+        local.vivo=json[idp].vivo;
         //aggiungi persona 
         if(pers!=json[1].persone){
           scene.add(point[pers]);
@@ -129,9 +124,10 @@
           pers=json[1].persone; 
         }
 
+        console.log(idp,json[idp].vivo,local.vivo);
+
         if(local.vivo <= 0){
           point[idp-1].position.set(100, 100, -1);
-          scene.remove(point[idp]);
         }
         
         //cambia poszione
@@ -140,21 +136,21 @@
         }
         for(var i=1;i<=pers;i++){
           if(json[i].vivo <= 0){point[i-1].position.set(100, 100, -1);scene.remove(point[i-1])};
-          if(json[idp].vivo != local.vivo){local.vivo=json[idp].vivo};        
+          if(json[idp].vivo != local.vivo){local.vivo=json[idp].vivo};    
         }
         
         //aggiungi mele
         for(var i = 100; i<=102; i++){
-          if(apple){
+          if(json[i]!==undefined){
             apple[i-100].position.set(json[i].posizione[0], json[i].posizione[1], -1);
             scene.add(apple[i-100]);
           }
         }
-      }
 
+      }
       function playerPrediction(){
-        for(var i=1;i<pers;i++){
-          if(i != idp){
+        for(var i=1;i<=pers+1;i++){
+          if(i != idp&&json[i]!==undefined){
             point[i-1].position.set(point[i-1].position.x+json[i].velocity[0],point[i-1].position.y+json[i].velocity[1],-1);
           }
         }

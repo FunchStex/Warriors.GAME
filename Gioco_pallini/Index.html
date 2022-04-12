@@ -2,12 +2,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Warriors.GAME</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script type="text/plain" src="https://raw.githubusercontent.com/mrdoob/three.js/dev/build/three.js"></script>
-    <link type="text/plain" href="https://raw.githubusercontent.com/FunchStex/Warriors.GAME/main/Gioco_pallini/style.css" rel="stylesheet"/>
+    <script src="js/three.min.js"></script>
+    <link type="text/css" href="style.css" rel="stylesheet"/>
 
     <style>
       body {
@@ -16,12 +16,11 @@
       canvas {
         width: 100%;
         height: 100%;
-        background-image: url('https://raw.githubusercontent.com/FunchStex/Warriors.GAME/main/Gioco_pallini/texture/bg.png');
+        background-image: url('texture/bg.png');
       }
     </style>
 
-    <script >
-      import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.module.js';
+    <script>
       //#region classi
       class Player {
         constructor(posizione, velocity, id, apple) {
@@ -41,11 +40,11 @@
       var oReq = null;
       var numPlayer;
       let texture, pointGeo, pointMaterial;
-      texture = new THREE.TextureLoader().load('https://raw.githubusercontent.com/FunchStex/Warriors.GAME/main/Gioco_pallini/texture/textureFin2.png');
+      texture = new THREE.TextureLoader().load("texture/textureFin2.png");
       pointGeo = new THREE.PlaneGeometry(0.1, 0.1);
       pointMaterial = new THREE.MeshBasicMaterial({ map: texture });
 
-      appleTexture = new THREE.TextureLoader().load('https://raw.githubusercontent.com/FunchStex/Warriors.GAME/main/Gioco_pallini/texture/mela.png');
+      appleTexture = new THREE.TextureLoader().load('texture/mela.png');
       appleGeometry = new THREE.PlaneGeometry(0.1, 0.1);
       appleMaterial = new THREE.MeshBasicMaterial({map:appleTexture, transparent: true, depthWrite: true});
 
@@ -194,7 +193,7 @@
       //#region init
       function init() {
         scene = new THREE.Scene();
-        scene.background = new THREE.TextureLoader().load('https://raw.githubusercontent.com/FunchStex/Warriors.GAME/main/Gioco_pallini/texture/bg.png');
+        scene.background = new THREE.TextureLoader().load("texture/bg.png");
         camera = new THREE.PerspectiveCamera(
           75,
           window.innerWidth / window.innerHeight,

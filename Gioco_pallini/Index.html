@@ -154,7 +154,7 @@
       }
       function playerPrediction(){
         for(var i=1;i<pers;i++){
-          if(i != idp){
+          if(i != idp-1){
             point[i-1].position.set(point[i-1].position.x+json[i].velocity[0],point[i-1].position.y+json[i].velocity[1],-1);
           }
         }

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="js/jquery-3.6.0.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Warriors.GAME</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="js/three.min.js"></script>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+
+    <style>
+      body {
+        margin: 0;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        background-image: url('texture/bg.png');
+      }
+    </style>
+
+    <script>
+      //#region classi
+      class Player {
+        constructor(posizione, velocity, id, apple) {
+          this.posizione = [0, 0];
+          this.velocity = [0, 0];
+          this.id;
+          this.vivo = 2;
+          this.apple=false;
+        }
+      }
+      var appleGeometry, appleTexture, appleMaterial, apple, json;
+
+      //#endregion
+
+      //#region variabili
+      var oReq = null;
+      var numPlayer;
+      let texture, pointGeo, pointMaterial;
+      texture = new THREE.TextureLoader().load("texture/textureFin2.png");
+      pointGeo = new THREE.PlaneGeometry(0.1, 0.1);
+      pointMaterial = new THREE.MeshBasicMaterial({ map: texture });
+
+      var player = [new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),];
+      var point = [new THREE.Mesh(pointGeo, pointMaterial), 
+                    new THREE.Mesh(pointGeo, pointMaterial),  
+                    new THREE.Mesh(pointGeo, pointMaterial),  
+                    new THREE.Mesh(pointGeo, pointMaterial),  
+                    new THREE.Mesh(pointGeo, pointMaterial),  
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial),
+                    new THREE.Mesh(pointGeo, pointMaterial)];
+
+
+      let scene,
+        camera,
+        point2,
+        renderer,
+        tastiera,
+        acc = 0.02,
+        dec = 0.0001;
+      var tasto,
+        posizione = [0, 0],
+        velocity = [0, 0],
+        velocity2 = [0, 0],
+        posizione2 = [0, 0];
+      var token = 200;
+      var local = new Player();
+      local.id = token;
+      var clock = null;
+      var start = false;
+      var tick=true;
+      var pers;
+      var idp;
+      var ricevuto=0;
+
+
+      //#endregion
+
+      //#region invia pachetto
+      function call() {
+        oReq = new XMLHttpRequest();
+        oReq.addEventListener("load", reqListener);
+        oReq.addEventListener("load", prova);
+        oReq.open("POST", "http://192.168.100.73:8000/", true);
+        oReq.setRequestHeader("Content-Type", "application/json");
+        var _data = JSON.stringify(local);
+        oReq.send(_data);
+        clock = null;
+      }
+      function prova(){
+        
+      }
+      function reqListener() {
+        json = JSON.parse(oReq.response);
+        //assegna token
+        if (local.id == token) {
+          ricevuto++;
+          console.log(ricevuto);
+          if(tick){
+            local.id = json[token].persone;
+            pers=json[token].persone
+            ricevuto=true;
+            idp=local.id;
+            tick=false
+          }
+        }
+        else{
+        }
+        
+        //aggigi persona 
+        if(pers!=json[1].persone){
+          scene.add(point[pers]);
+          point[pers].position.z=-1;
+          pers=json[1].persone; 
+        }
+        
+        //cambia poszione
+        for(var i=1;i<=pers;i++){
+          point[i-1].position.set(json[i].posizione[0],json[i].posizione[1],-1);
+        }
+        for(var i=1;i<=pers;i++){
+          if(json[i].vivo < 0){scene.remove(point[i-1])};
+          if(json[idp].vivo != local.vivo){local.vivo=json[idp].vivo};        
+        }
+
+        //SPAWN MELA 
+        if(json[1].apple == true){
+          spawnapple();
+          console.log(json[1].apple)
+          json[1].apple=false;
+          local.apple=false;
+        }
+
+      }
+      function playerPrediction(){
+        for(var i=1;i<pers;i++){
+          console.log(i);
+          point[i-1].position.set(point[i-1].position.x+json[i].velocity[0],point[i-1].position.y+json[i].velocity[1],-1);
+          
+        }
+      }
+    
+    function addpoint(){
+        for(var i=0;i<pers;i++){
+            point[idp-1].position.z=-1;
+            scene.add(point[i]);           
+        }
+      }
+
+      //#endregion
+      //#region set postion for all player
+
+      //#endregion
+    </script>
+  </head>
+
+  <body>
+    <h1 class="titolo">Warriors.GAME</h1>
+    <!--<h1 class="titolo_a_capo">Vite: <script>document.write(this.vivo)</script></h1>-->
+    <button id="startbutton" onclick="bool()" class="bottone">Inizia</button>
+
+    <script>
+      //#region avvia game
+      function bool() {
+        document.getElementById("startbutton").classList.remove("bottone");
+        document.getElementById("startbutton").classList.add("bottonen");
+        console.log("bottone rimosso");
+        call();
+        setTimeout(init, 1000);
+      }
+      //#endregion
+
+      //#region init
+      function init() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.TextureLoader().load("texture/bg.png");
+        camera = new THREE.PerspectiveCamera(
+          75,
+          window.innerWidth / window.innerHeight,
+          1,
+          1000
+        );
+        camera.position.z = 1;
+
+        renderer = new THREE.WebGLRenderer(); //Imposto come motore di render il motore web
+        renderer.setSize(window.innerWidth, window.innerHeight); //imposto la dimensione del render
+        document.body.appendChild(renderer.domElement);
+
+        point[0].position.set(1, 0, -1);
+        point[1].position.set(-1, 0, -1);
+
+        posizione2 = [point[1].position.x, point[1].position.y];
+        addpoint();
+        render();
+      }
+      //#endregion
+
+      //#region render
+      function render() {
+        movement();
+        renderer.render(scene, camera);
+        if (clock == null){
+          clock = setTimeout(call, 40); 
+        } 
+        playerPrediction();
+        requestAnimationFrame(render);
+      }
+      //#endregion
+
+      //#region movment
+      function movement() {
+        //campo
+        if (local.posizione[0] < -2.7 || local.posizione[0] > 2.8) {
+          local.velocity[0] = 0;
+          local.velocity[1] = 0;
+          if (local.posizione[0] < -2.7) {
+            local.velocity[0] += acc;
+          } else {
+            local.velocity[0] -= acc;
+          }
+        }
+        if (local.posizione[1] < -1.25 || local.posizione[1] > 1.1) {
+          local.velocity[0] = 0;
+          local.velocity[1] = 0;
+          if (local.posizione[1] < -1.2) {
+            local.velocity[1] += acc;
+          } else {
+            local.velocity[1] -= acc;
+          }
+        }
+        //direzione
+        document.onkeydown = function (tastiera) {
+          tasto = tastiera.keyCode;
+          switch (tastiera.keyCode) {
+            case 87:
+              local.velocity[1] += acc;
+              break;
+            case 83:
+              local.velocity[1] -= acc;
+              break;
+            case 65:
+              local.velocity[0] -= acc;
+              break;
+            case 68:
+              local.velocity[0] += acc;
+              break;
+            case 81:
+              local.velocity[0] -= acc / 2;
+              local.velocity[1] += acc / 2;
+              break;
+            case 69:
+              local.velocity[0] += acc / 2;
+              local.velocity[1] += acc / 2;
+              break;
+            case 90:
+              local.velocity[0] -= acc / 2;
+              local.velocity[1] -= acc / 2;
+              break;
+            case 67:
+              local.velocity[0] += acc / 2;
+              local.velocity[1] -= acc / 2;
+              break;
+          }
+          //console.log(velocity);
+        };
+        //movimento
+        switch (tasto) {
+          case 87:
+            local.velocity[0] = 0;
+            local.posizione[1] += local.velocity[1];
+            if (local.velocity[1] > 0) {
+              local.velocity[1] -= dec;
+            }
+            if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
+              local.velocity[1] = 0;
+            }
+            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            break;
+          case 83:
+            local.velocity[0] = 0;
+            local.posizione[1] += local.velocity[1];
+            if (local.velocity[1] < 0) {
+              local.velocity[1] += dec;
+            }
+            if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
+              local.velocity[1] = 0;
+            }
+            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            break;
+          case 65:
+            local.velocity[1] = 0;
+            local.posizione[0] += local.velocity[0];
+            if (local.velocity[0] < 0) {
+              local.velocity[0] += dec;
+            }
+            if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
+              local.velocity[0] = 0;
+            }
+            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            break;
+          case 68:
+            local.velocity[1] = 0;
+            local.posizione[0] += local.velocity[0];
+            if (local.velocity[0] > 0) {
+              local.velocity[0] -= dec;
+            }
+            if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
+              local.velocity[0] = 0;
+            }
+            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            //funzione che aggiorna le variabili su host agg(poszione[],velocita[],player,life,)
+            break;
+          case 81:
+            local.posizione[0] += local.velocity[0];
+            local.posizione[1] += local.velocity[1];
+            if (local.velocity[1] > 0) {
+              local.velocity[1] -= dec;
+            }
+            if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
+              local.velocity[1] = 0;
+            }
+            if (local.velocity[0] < 0) {
+              local.velocity[0] += dec;
+            }
+            if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
+              local.velocity[0] = 0;
+            }
+            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            break;
+          case 69:
+            local.posizione[0] += local.velocity[0];
+            local.posizione[1] += local.velocity[1];
+            if (local.velocity[1] > 0) {
+              local.velocity[1] -= dec;
+            }
+            if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
+              local.velocity[1] = 0;
+            }
+            if (local.velocity[0] > 0) {
+              local.velocity[0] -= dec;
+            }
+            if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
+              local.velocity[0] = 0;
+            }
+            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            break;
+          case 90:
+            local.posizione[0] += local.velocity[0];
+            local.posizione[1] += local.velocity[1];
+            if (local.velocity[0] < 0) {
+              local.velocity[0] += dec;
+            }
+            if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
+              local.velocity[0] = 0;
+            }
+            if (local.velocity[1] < 0) {
+              local.velocity[1] += dec;
+            }
+            if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
+              local.velocity[1] = 0;
+            }
+            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            break;
+          case 67:
+            local.posizione[0] += local.velocity[0];
+            local.posizione[1] += local.velocity[1];
+            if (local.velocity[0] > 0) {
+              local.velocity[0] -= dec;
+            }
+            if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
+              local.velocity[0] = 0;
+            }
+            if (local.velocity[1] < 0) {
+              local.velocity[1] += dec;
+            }
+            if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
+              local.velocity[1] = 0;
+            }
+            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            break;
+        }
+      }
+
+      function spawnapple(){       
+        appleTexture = new THREE.TextureLoader().load('texture/mela.png');
+        appleGeometry = new THREE.PlaneGeometry(0.1, 0.1);
+        appleMaterial = new THREE.MeshBasicMaterial({map:appleTexture, transparent: true, depthWrite: true});
+        apple = new THREE.Mesh(appleGeometry, appleMaterial)
+        apple.position.set(json[1].applex,json[1].appley,-1); //Manca lo spawn randomico e il fatto che se un player la prende la toglie e se la prende sto player da una vita
+        scene.add(apple);
+      }
+      //FUNZIONE SPAWN MELA NON TOGLIERE
+
+      //#endregion movment
+    </script>
+  </body>
+</html>

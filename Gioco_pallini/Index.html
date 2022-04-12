@@ -145,7 +145,7 @@
         
         //aggiungi mele
         for(var i = 100; i<=102; i++){
-          if(apple){
+          if(json[i]!==undefined){
             apple[i-100].position.set(json[i].posizione[0], json[i].posizione[1], -1);
             scene.add(apple[i-100]);
           }
@@ -153,8 +153,8 @@
 
       }
       function playerPrediction(){
-        for(var i=1;i<pers;i++){
-          if(i != idp-1){
+        for(var i=1;i<=pers+1;i++){
+          if(i != idp&&json[i]!==undefined){
             point[i-1].position.set(point[i-1].position.x+json[i].velocity[0],point[i-1].position.y+json[i].velocity[1],-1);
           }
         }
@@ -220,7 +220,7 @@
         movement();
         renderer.render(scene, camera);
         if (clock == null){
-          clock = setTimeout(call, 40); 
+          clock = setTimeout(call, 50); 
         } 
 
         document.getElementById('vis_vite').innerHTML = "Vite: " + local.vivo;

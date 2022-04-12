@@ -31,7 +31,8 @@
           this.apple=false;
         }
       }
-      var appleGeometry, appleTexture, appleMaterial, apple, json;
+
+      var appleGeometry, appleTexture, appleMaterial, apple, json, applex, aplley;
 
       //#endregion
 
@@ -42,6 +43,10 @@
       texture = new THREE.TextureLoader().load("texture/textureFin2.png");
       pointGeo = new THREE.PlaneGeometry(0.1, 0.1);
       pointMaterial = new THREE.MeshBasicMaterial({ map: texture });
+
+      appleTexture = new THREE.TextureLoader().load('texture/mela.png');
+      appleGeometry = new THREE.PlaneGeometry(0.1, 0.1);
+      appleMaterial = new THREE.MeshBasicMaterial({map:appleTexture, transparent: true, depthWrite: true});
 
       var player = [new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),];
       var point = [new THREE.Mesh(pointGeo, pointMaterial), 
@@ -57,6 +62,9 @@
                     new THREE.Mesh(pointGeo, pointMaterial),
                     new THREE.Mesh(pointGeo, pointMaterial)];
 
+      var apple = [new THREE.Mesh(appleGeometry, appleMaterial),
+                    new THREE.Mesh(appleGeometry, appleMaterial),
+                    new THREE.Mesh(appleGeometry, appleMaterial)];
 
       let scene,
         camera,
@@ -129,19 +137,17 @@
           if(json[i].vivo < 0){scene.remove(point[i-1])};
           if(json[idp].vivo != local.vivo){local.vivo=json[idp].vivo};        
         }
-
-        //SPAWN MELA 
-        if(json[1].apple == true){
-          spawnapple();
-          console.log(json[1].apple)
-          json[1].apple=false;
-          local.apple=false;
+        
+        //aggiungi mele
+        for(var i = 100; i<=102; i++){
+          apple[i-100].position.set(json[i].posizione[0], json[i].posizione[1], -1);
+          scene.add(apple[i-100]);
+          console.log(json[i].posizione, json[i].AppleVivo);
         }
 
       }
       function playerPrediction(){
         for(var i=1;i<pers;i++){
-          console.log(i);
           point[i-1].position.set(point[i-1].position.x+json[i].velocity[0],point[i-1].position.y+json[i].velocity[1],-1);
           
         }
@@ -163,7 +169,7 @@
 
   <body>
     <h1 class="titolo">Warriors.GAME</h1>
-    <!--<h1 class="titolo_a_capo">Vite: <script>document.write(this.vivo)</script></h1>-->
+    <h1 class="titolo_a_capo" id="vis_vite"></h1>
     <button id="startbutton" onclick="bool()" class="bottone">Inizia</button>
 
     <script>
@@ -209,6 +215,10 @@
         if (clock == null){
           clock = setTimeout(call, 40); 
         } 
+
+        document.getElementById('vis_vite').innerHTML = "Vite: " + local.vivo;
+
+
         playerPrediction();
         requestAnimationFrame(render);
       }
@@ -387,16 +397,6 @@
             break;
         }
       }
-
-      function spawnapple(){       
-        appleTexture = new THREE.TextureLoader().load('texture/mela.png');
-        appleGeometry = new THREE.PlaneGeometry(0.1, 0.1);
-        appleMaterial = new THREE.MeshBasicMaterial({map:appleTexture, transparent: true, depthWrite: true});
-        apple = new THREE.Mesh(appleGeometry, appleMaterial)
-        apple.position.set(json[1].applex,json[1].appley,-1); //Manca lo spawn randomico e il fatto che se un player la prende la toglie e se la prende sto player da una vita
-        scene.add(apple);
-      }
-      //FUNZIONE SPAWN MELA NON TOGLIERE
 
       //#endregion movment
     </script>

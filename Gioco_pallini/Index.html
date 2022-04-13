@@ -47,8 +47,7 @@
       appleTexture = new THREE.TextureLoader().load('texture/mela.png');
       appleGeometry = new THREE.PlaneGeometry(0.1, 0.1);
       appleMaterial = new THREE.MeshBasicMaterial({map:appleTexture, transparent: true, depthWrite: true});
-
-      var player = [new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),new Player(),];
+      
       var point = [new THREE.Mesh(pointGeo, pointMaterial), 
                     new THREE.Mesh(pointGeo, pointMaterial),  
                     new THREE.Mesh(pointGeo, pointMaterial),  

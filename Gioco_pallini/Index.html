@@ -47,20 +47,11 @@
       appleTexture = new THREE.TextureLoader().load('texture/mela.png');
       appleGeometry = new THREE.PlaneGeometry(0.1, 0.1);
       appleMaterial = new THREE.MeshBasicMaterial({map:appleTexture, transparent: true, depthWrite: true});
-      
-      var point = [new THREE.Mesh(pointGeo, pointMaterial), 
-                    new THREE.Mesh(pointGeo, pointMaterial),  
-                    new THREE.Mesh(pointGeo, pointMaterial),  
-                    new THREE.Mesh(pointGeo, pointMaterial),  
-                    new THREE.Mesh(pointGeo, pointMaterial),  
-                    new THREE.Mesh(pointGeo, pointMaterial),
-                    new THREE.Mesh(pointGeo, pointMaterial),
-                    new THREE.Mesh(pointGeo, pointMaterial),
-                    new THREE.Mesh(pointGeo, pointMaterial),
-                    new THREE.Mesh(pointGeo, pointMaterial),
-                    new THREE.Mesh(pointGeo, pointMaterial),
-                    new THREE.Mesh(pointGeo, pointMaterial)];
 
+
+      var point_=Array.of(new THREE.Mesh(pointGeo, pointMaterial));
+
+ 
       var apple = [new THREE.Mesh(appleGeometry, appleMaterial),
                     new THREE.Mesh(appleGeometry, appleMaterial),
                     new THREE.Mesh(appleGeometry, appleMaterial)];
@@ -114,27 +105,27 @@
             tick=false
           }
         }
-        console.log(json[idp].vivo);
         local.vivo=json[idp].vivo;
         //aggiungi persona 
-        if(pers!=json[1].persone){
-          scene.add(point[pers]);
-          point[pers].position.z=-1;
-          pers=json[1].persone; 
-        }
+        if(json[1]!==undefined){
+          if(pers!=json[1].persone){
+            addpoint(); 
+          }
+          if(json[1].persone>1)
+            addpointIngame();
+        }else addpointlocal();
 
-        
 
-        console.log(idp,json[idp].vivo,local.vivo);
+
 
         //cambia poszione
         for(var i=1;i<=pers;i++){
-          point[i-1].position.set(json[i].posizione[0],json[i].posizione[1],-1);
+          point_[i-1].position.set(json[i].posizione[0],json[i].posizione[1],-1);
         }
         for(var i=1;i<=pers;i++){
-          if(json[i].vivo <= 0){point[i-1].position.set(100, 100, -1);scene.remove(point[i-1])};
-          if(json[idp].vivo != local.vivo){local.vivo=json[idp].vivo};
-          if(local.vivo <= 0){local.posizione[0] = 100; local.posizione[1] = 100};    
+          if(json[i].vivo <= 0){point_[i-1].position.set(100, 100, -1);scene.remove(point_[i-1])};
+          if(local.vivo<=0){local.posizione[0]=100;local.posizione[1]=100}
+          if(json[idp].vivo != local.vivo){local.vivo=json[idp].vivo};    
         }
         
         //aggiungi mele
@@ -149,18 +140,34 @@
       function playerPrediction(){
         for(var i=1;i<=pers+1;i++){
           if(i != idp&&json[i]!==undefined){
-            point[i-1].position.set(point[i-1].position.x+json[i].velocity[0],point[i-1].position.y+json[i].velocity[1],-1);
+            point_[i-1].position.set(point_[i-1].position.x+json[i].velocity[0],point_[i-1].position.y+json[i].velocity[1],-1);
           }
         }
       }
     
     function addpoint(){
-        for(var i=0;i<pers;i++){
-            point[idp-1].position.z=-1;
-            scene.add(point[i]);           
+
+        for(var i=1;i<=json[1].persone;i++){
+            point_.push(new THREE.Mesh(pointGeo, pointMaterial))
+            point_[i-1].position.z=-1;
+            scene.add(point_[i-1]);     
+            pers=json[1].persone;      
+          
         }
       }
-
+      function addpointIngame(){
+        for(var i=0;i<json[1].persone;i++){
+          point_.push(new THREE.Mesh(pointGeo, pointMaterial))
+          point_[i].position.z=-1;
+          scene.add(point_[i]);     
+        }
+      }
+      function addpointlocal(){
+        for(var i=0;i<=pers;i++)point_.push(new THREE.Mesh(pointGeo, pointMaterial))
+        point_[idp-1].position.z=-1;
+        scene.add(point_[idp-1]);     
+                  
+      }
       //#endregion
       //#region set postion for all player
 
@@ -199,12 +206,11 @@
         renderer = new THREE.WebGLRenderer(); //Imposto come motore di render il motore web
         renderer.setSize(window.innerWidth, window.innerHeight); //imposto la dimensione del render
         document.body.appendChild(renderer.domElement);
+        point_.push(new THREE.Mesh(pointGeo, pointMaterial))
+        point_[0].position.set(0, 0, -1);
 
-        point[0].position.set(1, 0, -1);
-        point[1].position.set(-1, 0, -1);
-
-        posizione2 = [point[1].position.x, point[1].position.y];
-        addpoint();
+        posizione2 = [point_[1].position.x, point_[1].position.y];
+        addpointlocal();
         render();
       }
       //#endregion
@@ -292,7 +298,7 @@
             if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
               local.velocity[1] = 0;
             }
-            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            point_[idp-1].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 83:
             local.velocity[0] = 0;
@@ -303,7 +309,7 @@
             if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
               local.velocity[1] = 0;
             }
-            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            point_[idp-1].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 65:
             local.velocity[1] = 0;
@@ -314,7 +320,7 @@
             if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
               local.velocity[0] = 0;
             }
-            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            point_[idp-1].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 68:
             local.velocity[1] = 0;
@@ -325,7 +331,7 @@
             if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
               local.velocity[0] = 0;
             }
-            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            point_[idp-1].position.set(local.posizione[0], local.posizione[1]);
             //funzione che aggiorna le variabili su host agg(poszione[],velocita[],player,life,)
             break;
           case 81:
@@ -343,7 +349,7 @@
             if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
               local.velocity[0] = 0;
             }
-            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            point_[idp-1].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 69:
             local.posizione[0] += local.velocity[0];
@@ -360,7 +366,7 @@
             if (local.velocity[0] < 0.002 && local.velocity[0] > 0) {
               local.velocity[0] = 0;
             }
-            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            point_[idp-1].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 90:
             local.posizione[0] += local.velocity[0];
@@ -377,7 +383,7 @@
             if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
               local.velocity[1] = 0;
             }
-            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            point_[idp-1].position.set(local.posizione[0], local.posizione[1]);
             break;
           case 67:
             local.posizione[0] += local.velocity[0];
@@ -394,7 +400,7 @@
             if (local.velocity[1] < 0.002 && local.velocity[1] > 0) {
               local.velocity[1] = 0;
             }
-            point[idp-1].position.set(local.posizione[0], local.posizione[1]);
+            point_[idp-1].position.set(local.posizione[0], local.posizione[1]);
             break;
         }
       }

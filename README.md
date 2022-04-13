@@ -1,7 +1,7 @@
 # Warriors.GAME
 
 This game has been made by Thomas Favero and Stefano Facchin
-Is a project for the scool stage
+Is a project for the school stage
 In this project we learned how to use javascript with the tree js library for the client part of the project and c# for server part of the project
 
 ***DESCRIPTION***

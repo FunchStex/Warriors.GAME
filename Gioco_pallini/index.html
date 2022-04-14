@@ -18,7 +18,6 @@
       font-family: "comic Sans MS";
       width: 100vw;
       color: white;
-      text-align: center;
       position: absolute;
       margin-top: 30px;
       margin-left: auto;
@@ -30,7 +29,6 @@
       font-family: "comic Sans MS";
       width: 100vw;
       color: white;
-      text-align: center;
       position: absolute;
       margin-top: 90px;
       margin-left: auto;
@@ -94,7 +92,6 @@
       var oReq = null;
       var numPlayer;
       let texture, pointGeo, pointMaterial;
-      var richiesta = new THREE.TextureLoader().load('/richietsa/richietsa.png');
       texture = new THREE.TextureLoader().load("https://github.com/FunchStex/Warriors.GAME/blob/main/Gioco_pallini/texture/textureFin2.png?raw=true");
       pointGeo = new THREE.PlaneGeometry(0.1, 0.1);
       pointMaterial = new THREE.MeshBasicMaterial({ map: texture });
@@ -236,7 +233,6 @@
                 console.log("bottone rimosso");
                 call();
                     //richietsa molto rude
-                var richiesta = new THREE.TextureLoader().load('/richietsa/richietsa.png');
                 setTimeout(init, 1000);
               }
               //#endregion
@@ -460,10 +456,13 @@
 </head>
 
 <body>
-  <h1 class="titolo">Warriors.GAME</h1>
-  <h1 class="titolo_a_capo" id="vis_vite"></h1>
-  <button id="startbutton" onclick="bool()" class="bottone">Inizia</button>
-
+  <center><h1 class="titolo">Warriors.GAME</h1></center>
+  <center><h1 class="titolo_a_capo" id="vis_vite"></h1></center>
+  <!--<button id="startbutton" onclick="bool()"  class="bottone" type=\"submit\" action="shutdown" >Inizia</button>-->
+  
+  <button class="bottone" id="startbutton" onclick="bool()">Inizia</button>
+  <form method=\"post\" action="shutdown">
+  </form>
 </body>
 
 </html>

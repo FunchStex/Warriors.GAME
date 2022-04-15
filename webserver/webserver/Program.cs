@@ -7,6 +7,8 @@ using System.Net;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Net.Sockets;
+using System.Drawing;
+
 
 
 
@@ -18,17 +20,17 @@ namespace BasicWeb
 
 
         public static HttpListener listener;
-        static HttpClient client= new HttpClient();
+        static HttpClient client = new HttpClient();
         public static int pageViews = 0;
         public static int requestCount = 0;
 
-       public static Dictionary<string, Pachetto> dataset = new Dictionary<string, Pachetto>();
-       public static Pachetto player;
-       public static string url;
+        public static Dictionary<string, Pachetto> dataset = new Dictionary<string, Pachetto>();
+        public static Pachetto player;
+        public static string url;
 
-        public static bool Spawn=true;
+        public static bool Spawn = true;
         public static float Timer = 10;
-        public static int MeleCount=0;
+        public static int MeleCount = 0;
         public static string html =
             "<!DOCTYPE>" +
             "<html>" +
@@ -42,7 +44,7 @@ namespace BasicWeb
             "    </form>" +
             "  </body>" +
             "</html>";
-        public static float[,] _dis=new float[13,13];
+        public static float[,] _dis = new float[13, 13];
 
 
 
@@ -57,7 +59,7 @@ namespace BasicWeb
             Random random = new Random();
             Timer = (float)random.NextDouble() * (float)10;
             Timer += 10;
-            
+
         }
         public static void SpawnApple()
         {
@@ -71,7 +73,7 @@ namespace BasicWeb
                 float x = (float)random.NextDouble() * (float)5.4;
                 x -= (float)2.8;
                 float y = (float)random.NextDouble() * (float)2.25;
-                y-= (float)1.25;
+                y -= (float)1.25;
 
 
                 Mela.posizione[0] = x;
@@ -79,7 +81,7 @@ namespace BasicWeb
                 Mela.AppleVivo = true;
                 bool keyExists = dataset.ContainsKey(count.ToString());
                 if (!keyExists)
-                    dataset.Add(count,Mela);
+                    dataset.Add(count, Mela);
 
                 dataset[count.ToString()] = Mela;
 
@@ -88,18 +90,19 @@ namespace BasicWeb
                 Spawn = false;
 
             }
-            else if (dataset.Count>0&&!Spawn)
+            else if (dataset.Count > 0 && !Spawn)
             {
                 dataset["1"].apple = false;
                 Spawn = true;
-            }else
+            }
+            else
             {
                 MeleCount = 0;
             }
         }
         public static async Task CheckDeath()
         {
-             int i = 0;
+            int i = 0;
             foreach (KeyValuePair<string, Pachetto> kvp in dataset)
             {
                 float x = kvp.Value.posizione[0];
@@ -108,25 +111,25 @@ namespace BasicWeb
                 float vy = kvp.Value.velocity[1];
 
 
-                 int j = 0;
+                int j = 0;
                 foreach (KeyValuePair<string, Pachetto> kvp2 in dataset)
-                 {
-                    if (kvp.Value.id!=200&&kvp2.Value.id!=200)
+                {
+                    if (kvp.Value.id != 200 && kvp2.Value.id != 200)
                     {
                         if (kvp.Key != kvp2.Key)
                         {
-                            float x2=kvp2.Value.posizione[0];
-                            float y2=kvp2.Value.posizione[1];
-                            float vx2=kvp2.Value.velocity[0];
-                            float vy2=kvp2.Value.velocity[1];
+                            float x2 = kvp2.Value.posizione[0];
+                            float y2 = kvp2.Value.posizione[1];
+                            float vx2 = kvp2.Value.velocity[0];
+                            float vy2 = kvp2.Value.velocity[1];
 
 
                             float dis = (float)Math.Sqrt(Math.Pow(x - x2, 2) + Math.Pow(y - y2, 2));
-                            _dis[i,j] = dis;
-                             if (_dis[i,j] <= 0.08 && ( Math.Abs(vx) > Math.Abs(vx2) || Math.Abs(vy) > Math.Abs(vy2) ))
-                             {
-                                bool colpito=kvp2.Value.Colpito;
-                                if (colpito)                                
+                            _dis[i, j] = dis;
+                            if (_dis[i, j] <= 0.08 && (Math.Abs(vx) > Math.Abs(vx2) || Math.Abs(vy) > Math.Abs(vy2)))
+                            {
+                                bool colpito = kvp2.Value.Colpito;
+                                if (colpito)
                                 {
                                     kvp2.Value.Colpito = false;
                                     kvp2.Value.vivo--;
@@ -136,7 +139,7 @@ namespace BasicWeb
 
                                 }
                                 Console.WriteLine(kvp.Value.vivo);
-                             }
+                            }
                             Console.WriteLine("id:{0},vita:{1}", kvp.Value.id, kvp.Value.vivo);
                             //if (_dis[i,j] > 0.08)
                             //{
@@ -150,7 +153,7 @@ namespace BasicWeb
 
 
                     }
-                    else if(kvp.Value.id!=200)
+                    else if (kvp.Value.id != 200)
                     {
                         float disMela = (float)Math.Sqrt(Math.Pow(x - kvp2.Value.posizione[0], 2) + Math.Pow(y - kvp2.Value.posizione[1], 2));
                         if (disMela < 0.1)
@@ -159,16 +162,16 @@ namespace BasicWeb
                             {
                                 kvp.Value.vivo++;
                             }
-                                kvp2.Value.AppleVivo = false;
-                                kvp2.Value.posizione[0] = 5;
-                                kvp2.Value.posizione[1] = 5;
-                                Console.WriteLine("viata umentata");
+                            kvp2.Value.AppleVivo = false;
+                            kvp2.Value.posizione[0] = 5;
+                            kvp2.Value.posizione[1] = 5;
+                            Console.WriteLine("viata umentata");
 
-                            
+
                         }
                     }
 
-                    if (kvp.Value.vivo <= 0&&(kvp.Value.id!=200))
+                    if (kvp.Value.vivo <= 0 && (kvp.Value.id != 200))
                     {
                         kvp.Value.posizione[0] = 100 + kvp.Value.posizione[0];
                         kvp.Value.posizione[1] = 100 + kvp.Value.posizione[1];
@@ -177,25 +180,25 @@ namespace BasicWeb
 
                 }
 
-                    i++;
+                i++;
             }
 
- 
+
         }
         public static async Task inattivita()
         {
-            foreach(KeyValuePair<string, Pachetto> kvp in dataset)
+            foreach (KeyValuePair<string, Pachetto> kvp in dataset)
             {
                 float x = kvp.Value.posizione[0];
                 float y = kvp.Value.posizione[1];
-               Task.Delay(20000);
-                float newx=kvp.Value.posizione[0];
+                Task.Delay(20000);
+                float newx = kvp.Value.posizione[0];
                 float newy = kvp.Value.posizione[1];
 
-                if(x == newx && y == newy)
+                if (x == newx && y == newy)
                 {
-                    kvp.Value.posizione[0] = 100+kvp.Value.posizione[0];
-                    kvp.Value.posizione[1] = 100+kvp.Value.posizione[1];
+                    kvp.Value.posizione[0] = 100 + kvp.Value.posizione[0];
+                    kvp.Value.posizione[1] = 100 + kvp.Value.posizione[1];
                 }
 
             }
@@ -220,6 +223,8 @@ namespace BasicWeb
         }
         public static async Task HandleIncomingConnections()
         {
+            client.Timeout = TimeSpan.FromMinutes(5);
+
             bool runServer = true;
             SetRandom();
             while (runServer)
@@ -228,10 +233,24 @@ namespace BasicWeb
                 HttpListenerContext ctx = await listener.GetContextAsync();
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
-                var request = new HttpRequestMessage(HttpMethod.Post,url);
+                var request = new HttpRequestMessage(HttpMethod.Post, url);
 
+                //var resourceName = req.Url.AbsolutePath;
+                //if(resourceName != "/"&&resourceName!="/favicon.ico")
+                //{
+                //    Console.WriteLine(Directory.GetCurrentDirectory() + "\\www\\" + resourceName);
+                //   file=File.ReadAllBytes(Directory.GetCurrentDirectory() + "\\www\\" + resourceName);
+                //    var ext = Path.GetExtension(resourceName);
+                //    if (ext == ".png")
+                //        resp.ContentType = "image/png";
+                //    else if (ext == ".html" || ext == ".htm")
+                //        resp.ContentType = "text/html";
+                //    else
+                //    {
+                //        // servizio
+                //    }
 
-
+                //}
                 //permesso per inviare il pachetto
                 resp.AddHeader("Access-Control-Allow-Origin", "*");
                 resp.AddHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
@@ -249,48 +268,69 @@ namespace BasicWeb
 
 
 
+                
                 if (ris != null)
                 {
-                player = JsonConvert.DeserializeObject<Pachetto>(ris);
-                    if (player != null)
+                    player = JsonConvert.DeserializeObject<Pachetto>(ris);
+                    Console.WriteLine(req.Url.AbsolutePath);
+                    var resourceName = req.Url.AbsolutePath;
+                    if(resourceName == "/")
                     {
-                        if (player.id > 100)
-                        {
-                            player.persone = pageViews;
-                            pageViews++;
-
-                        }
-                        if (pageViews > 0) dataset.Remove("200");
-
-
-
-                        dataset[player.id.ToString()] = player;
-                        await Task.Run(() =>
-                        {
-                            calcolo();
-                            //inattivita();
-                        });
-                        bool keyExists = dataset.ContainsKey("1");
-                        if (keyExists)
-                        {
-
-                        }
-                            //Console.WriteLine("la vita di 1 eeeee {0},", dataset["1"].vivo);
-                        string data = System.Text.Json.JsonSerializer.Serialize(dataset);
-                        request.Content = new StringContent(data,Encoding.UTF8,"application/json");
-
-
-
-
-                        //invio risposta
-                        byte[] buffer = System.Text.Encoding.UTF8.GetBytes(data);
-                        resp.ContentType = "application/json";
-                        resp.ContentEncoding = Encoding.UTF8;
-
-
-                        await resp.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+                        string Path = Directory.GetCurrentDirectory() + "\\www\\index.html";
+                        string readText = File.ReadAllText(Path);
+                        byte[] _data = Encoding.UTF8.GetBytes(readText);
+                        resp.ContentType = "text/html";
+                        
+                        resp.ContentLength64 = _data.LongLength;
+                        await resp.OutputStream.WriteAsync(_data, 0, _data.Length);
                     }
- 
+                    else if (resourceName != "/favicon.ico"&&resourceName!="/game")
+                    {
+                        byte[] file = File.ReadAllBytes(Directory.GetCurrentDirectory() + "\\www\\" + resourceName);
+                        var ext = Path.GetExtension(resourceName);
+                        if (ext == ".png")
+                        {
+                            resp.ContentType = "image/png";
+                            //string readText = File.ReadAllText(file);
+                            //byte[] _data = Encoding.UTF8.GetBytes(readText);
+                            resp.ContentEncoding = Encoding.UTF8;
+                            resp.ContentLength64 = file.LongLength;
+                            await resp.OutputStream.WriteAsync(file, 0, file.Length);
+
+                        }
+
+                    }
+                    else if (req.Url.AbsolutePath == "/game")
+                    {
+                        if (player != null)
+                        {
+                            if (player.id > 100)
+                            {
+                                player.persone = pageViews;
+                                pageViews++;
+
+                            }
+                            if (pageViews > 0) dataset.Remove("200");
+
+
+
+                            dataset[player.id.ToString()] = player;
+                            await Task.Run(() =>
+                            {
+                                calcolo();
+                                //inattivita();
+                            });
+                            string data = System.Text.Json.JsonSerializer.Serialize(dataset);
+                            request.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                            //invio risposta
+                            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(data);
+                            resp.ContentType = "application/json";
+                            resp.ContentEncoding = Encoding.UTF8;
+                            await resp.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+
+                        }
+                    }
+
                     resp.Close();
 
                 }
@@ -313,19 +353,17 @@ namespace BasicWeb
 
         public void Start()
         {
-            url=GetIp();
+            url = GetIp();
             listener = new HttpListener();
             listener.Prefixes.Add(url);
             listener.Start();
             Console.WriteLine("server partito in {0}", url);
-
             Task listenTask = HandleIncomingConnections();
             listenTask.GetAwaiter().GetResult();
 
- 
+
             listener.Close();
         }
 
     }
 }
-

@@ -155,10 +155,12 @@
             tick=false
           }
         }
-        local.vivo=json[idp].vivo;
+         if (json[idp] !== undefined)
+            local.vivo=json[idp].vivo;
         //aggiungi persona 
         if(json[1]!==undefined){
           if(pers!=json[1].persone){
+            point_.push(new THREE.Mesh(pointGeo, pointMaterial));
             addpoint(); 
           }
           if(json[1].persone>1)
@@ -191,9 +193,9 @@
 
       }
       function playerPrediction(){
-        for(var i=1;i<=pers+1;i++){
-          if(i != idp&&json[i]!==undefined){
-            point_[i-1].position.set(point_[i-1].position.x+json[i].velocity[0],point_[i-1].position.y+json[i].velocity[1],-1);
+        for(var i=0;i<pers;i++){
+          if(i !== idp-1){
+            point_[i].position.set(point_[i].position.x+json[i+1].velocity[0],point_[i].position.y+json[i+1].velocity[1],-1);
           }
         }
       }
@@ -201,7 +203,6 @@
     function addpoint(){
 
         for(var i=1;i<=json[1].persone;i++){
-            point_.push(new THREE.Mesh(pointGeo, pointMaterial))
             point_[i-1].position.z=-1;
             scene.add(point_[i-1]);     
             pers=json[1].persone;      
@@ -209,20 +210,23 @@
         }
       }
       function addpointIngame(){
-        for(var i=0;i<json[1].persone;i++){
-          point_.push(new THREE.Mesh(pointGeo, pointMaterial))
-          point_[i].position.z=-1;
-          scene.add(point_[i]);     
+        for(var i=1;i<=json[1].persone;i++){
+          point_[i-1].position.z=-1;
+          scene.add(point_[i-1]);     
         }
       }
       function addpointlocal(){
-          for (var i = 0; i <= pers; i++)point_.push(new THREE.Mesh(pointGeo, pointMaterial))
           if (idp!== undefined) {
             point_[idp-1].position.z=-1;
             scene.add(point_[idp-1]);     
 
           }
                   
+      }
+      function iniz(){
+        for(var i=1;i<=pers;i++){
+          point_.push(new THREE.Mesh(pointGeo, pointMaterial));
+        }
       }
       //#endregion
       //#region set postion for all player
@@ -255,11 +259,11 @@
                 renderer = new THREE.WebGLRenderer(); //Imposto come motore di render il motore web
                 renderer.setSize(window.innerWidth, window.innerHeight); //imposto la dimensione del render
                 document.body.appendChild(renderer.domElement);
-                point_.push(new THREE.Mesh(pointGeo, pointMaterial))
+                point_.push(new THREE.Mesh(pointGeo, pointMaterial));
                 point_[0].position.set(0, 0, -1);
         
                 posizione2 = [point_[1].position.x, point_[1].position.y];
-                //addpointlocal();
+                iniz();
                 render();
               }
               //#endregion

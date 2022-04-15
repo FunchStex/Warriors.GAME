@@ -276,7 +276,7 @@ namespace BasicWeb
                     var resourceName = req.Url.AbsolutePath;
                     if(resourceName == "/")
                     {
-                        string Path = Directory.GetCurrentDirectory() + "\\www\\index.html";
+                        string Path = Directory.GetCurrentDirectory() + "\\www\\Index.html";
                         string readText = File.ReadAllText(Path);
                         byte[] _data = Encoding.UTF8.GetBytes(readText);
                         resp.ContentType = "text/html";
